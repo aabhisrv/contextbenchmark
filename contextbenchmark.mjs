@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// detbench — the AI (context-layer) Determinism Benchmark runner.
+// contextbenchmark — the open benchmark for AI context systems.
 //
 //   node detbench.mjs run     [--corpus corpora/micro-app] [--adapters bm25,emb-minilm,spiderbrain]
 //                             [--families rebuild,query,drift] [--rebuilds 3] [--trials 5] [--k 10]
@@ -12,7 +12,7 @@
 //   drift    Drift-Under-Noise     irrelevant file added -> how much do unrelated answers move?
 //   (cross)  Cross-Machine         via `compare` on fingerprints from two machines
 //
-// Scope guard: detbench measures the CONTEXT layer only. LLM inference
+// Scope guard: contextbenchmark measures the CONTEXT layer only. LLM inference
 // nondeterminism is explicitly out of scope (see README "What this is not").
 
 import { mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
@@ -33,7 +33,7 @@ const cmd = args._[0] || 'run';
 // ── compare (cross-machine identity) ────────────────────────────────────────
 if (cmd === 'compare') {
   const [A, B] = [args._[1], args._[2]].map(p => JSON.parse(readFileSync(resolve(p), 'utf8')));
-  console.log(`\ndetbench compare — cross-machine identity`);
+  console.log(`\ncontextbenchmark compare — cross-machine identity`);
   console.log(`  A: ${A.env.os}/${A.env.arch} node ${A.env.node}  (${A.adapter})`);
   console.log(`  B: ${B.env.os}/${B.env.arch} node ${B.env.node}  (${B.adapter})`);
   if (A.adapter !== B.adapter || A.corpus !== B.corpus) { console.log('  NOT COMPARABLE (different adapter or corpus)'); process.exit(2); }
@@ -139,7 +139,7 @@ for (const ad of adapters) {
   report.adapters[ad.name] = R;
 
   // fingerprint for cross-machine exchange
-  const fp = { detbenchFingerprint: 1, adapter: ad.name, corpus: corpusName, k: K,
+  const fp = { contextbenchmarkFingerprint: 1, adapter: ad.name, corpus: corpusName, k: K,
     env: report.env, artifactHash: hashes[0], queryHashes };
   const fpPath = resolve(__dirname, 'results', `${ad.name}.${corpusName}.${os.platform()}-${os.arch()}.fingerprint.json`);
   writeFileSync(fpPath, JSON.stringify(fp, null, 1));

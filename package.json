@@ -1,17 +1,30 @@
 {
-  "name": "detbench",
+  "name": "contextbenchmark",
   "version": "0.1.0",
-  "description": "AI Determinism Benchmark — context-layer determinism (rebuild-identity, query-stability, drift-under-noise, cross-machine identity) with Determinism Levels D0-D4 and a verifiable fingerprint format",
+  "description": "The open benchmark for measuring the reliability, reproducibility, and determinism of AI context systems. Compare context engines with transparent metrics, reproducible tests, and vendor-neutral results.",
   "type": "module",
-  "bin": { "detbench": "./detbench.mjs" },
-  "engines": { "node": ">=20" },
+  "bin": {
+    "contextbenchmark": "./contextbenchmark.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "bench": "node detbench.mjs run --adapters bm25",
-    "bench:all": "node detbench.mjs run --adapters bm25,emb-minilm,spiderbrain"
+    "bench": "node contextbenchmark.mjs run --adapters bm25",
+    "bench:all": "node contextbenchmark.mjs run --adapters bm25,emb-minilm,spiderbrain"
   },
   "optionalDependencies": {
     "@xenova/transformers": "^2.17.2"
   },
-  "keywords": ["determinism", "reproducibility", "benchmark", "rag", "retrieval", "agent-memory", "context-engineering"],
-  "license": "MIT"
+  "keywords": [
+    "determinism",
+    "reproducibility",
+    "benchmark",
+    "rag",
+    "retrieval",
+    "agent-memory",
+    "context-engineering"
+  ],
+  "license": "MIT",
+  "homepage": "https://contextbenchmark.com"
 }

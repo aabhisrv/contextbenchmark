@@ -1,4 +1,4 @@
-# Contributing to detbench
+# Contributing to contextbenchmark
 
 The benchmark is only credible if it is fair, runnable by anyone, and adversarial to everyone — including its authors.
 
@@ -10,5 +10,5 @@ The benchmark is only credible if it is fair, runnable by anyone, and adversaria
 
 ## Ground rules
 - Metrics changes require an issue first (they invalidate published levels).
-- Every PR must keep `node detbench.mjs run --adapters bm25` green on all three OSes (CI enforces).
+- Every PR must keep `node contextbenchmark.mjs run --adapters bm25` green on all three OSes (CI enforces).
 - Results in PRs/issues must follow the disclosure standard in the README (fingerprints or it didn't happen).

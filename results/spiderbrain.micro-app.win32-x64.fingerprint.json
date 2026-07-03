@@ -1,5 +1,5 @@
 {
- "detbenchFingerprint": 1,
+ "contextbenchmarkFingerprint": 1,
  "adapter": "spiderbrain",
  "corpus": "micro-app",
  "k": 10,
@@ -8,7 +8,7 @@
   "arch": "x64",
   "node": "v24.14.0"
  },
- "artifactHash": "cd22bd1948cfdc10cbef249d987a83041b34fbd26dd3001756c90df6ed3eda29",
+ "artifactHash": "0f8036ac47a5903b951f5f625ad11fbf2a1c1c9eca2c838529cf96655cd0c244",
  "queryHashes": {
   "where is the session expiry TTL enforced": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
   "how does login verify credentials": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",

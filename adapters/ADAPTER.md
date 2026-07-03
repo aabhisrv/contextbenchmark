@@ -1,4 +1,4 @@
-# detbench adapter contract
+# contextbenchmark adapter contract
 
 An adapter connects one context system (retriever, index, memory engine, RAG stack) to the benchmark. It must be honest — configure the system the way it actually ships, not a determinism-friendly special mode (if you benchmark a special mode, name it, e.g. `myindex-exhaustive`).
 
@@ -39,7 +39,7 @@ export function available() { return true; }
 
 ## Rules of honesty
 
-1. **No benchmark-only determinism.** Seeds, sorts, or flags added for detbench that production users don't get = misrepresentation.
+1. **No benchmark-only determinism.** Seeds, sorts, or flags added for contextbenchmark that production users don't get = misrepresentation.
 2. **Remote systems**: adapters may call hosted APIs (put keys behind `available()`), but the report must say so — network nondeterminism then counts against the system, because users experience it too.
 3. **File-level granularity**: map your system's native results (chunks, memories, symbols) to corpus-relative file paths; document the mapping in a header comment.
 4. **Async is fine** everywhere; the runner awaits both `build` and `query`.

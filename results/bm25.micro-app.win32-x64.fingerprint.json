@@ -1,5 +1,5 @@
 {
- "detbenchFingerprint": 1,
+ "contextbenchmarkFingerprint": 1,
  "adapter": "bm25",
  "corpus": "micro-app",
  "k": 10,

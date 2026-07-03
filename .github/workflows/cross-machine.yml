@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node detbench.mjs run --adapters bm25 --families rebuild,query --rebuilds 2 --trials 3
+      - run: node contextbenchmark.mjs run --adapters bm25 --families rebuild,query --rebuilds 2 --trials 3
       - uses: actions/upload-artifact@v4
         with:
           name: fingerprint-${{ matrix.os }}
@@ -35,7 +35,7 @@ jobs:
           A=$(ls fp/fingerprint-ubuntu-latest/*.fingerprint.json | head -1)
           B=$(ls fp/fingerprint-windows-latest/*.fingerprint.json | head -1)
           C=$(ls fp/fingerprint-macos-latest/*.fingerprint.json | head -1)
-          node detbench.mjs compare "$A" "$B"
-          node detbench.mjs compare "$A" "$C"
-          node detbench.mjs compare "$B" "$C"
+          node contextbenchmark.mjs compare "$A" "$B"
+          node contextbenchmark.mjs compare "$A" "$C"
+          node contextbenchmark.mjs compare "$B" "$C"
           echo "D4 VERIFIED for bm25 across ubuntu/windows/macos"
