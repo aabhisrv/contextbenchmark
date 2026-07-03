@@ -1,0 +1,41 @@
+# Cross-Machine Identity (D4 verification): run the deterministic adapters on
+# three OSes, exchange fingerprints, and fail if any pair diverges.
+name: cross-machine-identity
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  fingerprint:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: node detbench.mjs run --adapters bm25 --families rebuild,query --rebuilds 2 --trials 3
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fingerprint-${{ matrix.os }}
+          path: results/*.fingerprint.json
+
+  compare:
+    needs: fingerprint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/download-artifact@v4
+        with: { path: fp }
+      - name: compare all OS pairs
+        shell: bash
+        run: |
+          set -e
+          A=$(ls fp/fingerprint-ubuntu-latest/*.fingerprint.json | head -1)
+          B=$(ls fp/fingerprint-windows-latest/*.fingerprint.json | head -1)
+          C=$(ls fp/fingerprint-macos-latest/*.fingerprint.json | head -1)
+          node detbench.mjs compare "$A" "$B"
+          node detbench.mjs compare "$A" "$C"
+          node detbench.mjs compare "$B" "$C"
+          echo "D4 VERIFIED for bm25 across ubuntu/windows/macos"

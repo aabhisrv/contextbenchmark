@@ -1,0 +1,24 @@
+{
+ "detbenchFingerprint": 1,
+ "adapter": "spiderbrain",
+ "corpus": "micro-app",
+ "k": 10,
+ "env": {
+  "os": "win32 10.0.19045",
+  "arch": "x64",
+  "node": "v24.14.0"
+ },
+ "artifactHash": "cd22bd1948cfdc10cbef249d987a83041b34fbd26dd3001756c90df6ed3eda29",
+ "queryHashes": {
+  "where is the session expiry TTL enforced": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "how does login verify credentials": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "cart maximum item limit": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "how are discounts applied to the cart total": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "payment retry logic": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "refund validation flow": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "product caching behavior": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "search result ranking": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "event bus subscription": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "which modules read central configuration": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+ }
+}

@@ -1,0 +1,12 @@
+[
+  "where is the session expiry TTL enforced",
+  "how does login verify credentials",
+  "cart maximum item limit",
+  "how are discounts applied to the cart total",
+  "payment retry logic",
+  "refund validation flow",
+  "product caching behavior",
+  "search result ranking",
+  "event bus subscription",
+  "which modules read central configuration"
+]
