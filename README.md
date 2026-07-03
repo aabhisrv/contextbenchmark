@@ -2,7 +2,7 @@
 
 **The open benchmark for measuring the reliability, reproducibility, and determinism of AI context systems.** Compare context engines with transparent metrics, reproducible tests, and vendor-neutral results.
 
-🌐 [contextbenchmark.com](https://contextbenchmark.com)
+🌐 [contextbenchmark.com](https://contextbenchmark.com) · ![cross-machine-identity](https://github.com/aabhisrv/contextbenchmark/actions/workflows/cross-machine.yml/badge.svg)
 
 Measures whether an AI system's *context layer* gives the same answer twice: Rebuild-identity, query-stability, drift-under-noise, and cross-machine identity for retrieval indexes, code-context engines, RAG pipelines, and agent-memory systems — with a graded standard (Determinism Levels **D0–D4**) and a verifiable fingerprint format anyone can check.
 
@@ -62,14 +62,14 @@ node contextbenchmark.mjs compare results/<A>.fingerprint.json results/<B>.finge
 
 | Adapter | Rebuild-Identity | Query-Stability (EMR) | Drift-Under-Noise | Level |
 |---|---|---|---|---|
-| `bm25` (lexical reference) | PASS (1 hash / 3 builds) | 1.0 | 0.04 — noise reached top-10 in 2/10 queries (WARN) | **D3** |
+| `bm25` (lexical reference) | PASS (1 hash / 3 builds) | 1.0 | 0.04 — noise reached top-10 in 2/10 queries (WARN) | **D4** ✓ CI-verified |
 | `spiderbrain` (structural code-context engine) | PASS (1 hash / 3 builds) | 1.0 | **0.00 — noise never surfaced (PASS)** | **D3** |
 | `emb-minilm` (chunk-embedding RAG reference) | *pending on this machine* | — | — | — |
 
 Two early, honest observations:
 - **The bar is reachable**: a plainly-engineered lexical retriever hits D3. Systems scoring below the free baseline on *determinism* have made a design choice, not hit a law of nature.
 - **Drift separates architectures**: BM25's global IDF statistics shift when any document lands (noise leaked into unrelated top-10s); a structural dependency-graph engine ignored the unconnected file entirely. Embedding indexes and LLM-extraction memory pipelines are expected to sit between and below — run them and see.
-- **D4 is the real test.** Same-machine determinism is table stakes; portability across OS/architecture (where floating-point and library differences live) is where most stacks are expected to drop. The CI matrix in `.github/workflows/cross-machine.yml` runs the exchange automatically on Linux/macOS/Windows.
+- **D4 is the real test — and it is verified live**: this repo's CI matrix builds fingerprints on ubuntu/windows/macos and compares every pair on each push. Run #1 verified bm25 at D4 (artifact hashes identical, 10/10 query results identical across all three OS pairs). The spiderbrain adapter's D4 run is pending CI-runnable packaging (its fingerprints are published for independent comparison meanwhile).
 
 ## Adapters
 
