@@ -38,4 +38,4 @@ jobs:
           node contextbenchmark.mjs compare "$A" "$B"
           node contextbenchmark.mjs compare "$A" "$C"
           node contextbenchmark.mjs compare "$B" "$C"
-          echo "D4 VERIFIED for bm25 across ubuntu/windows/macos"
+          echo "CTL-4 VERIFIED for bm25 across ubuntu/windows/macos"

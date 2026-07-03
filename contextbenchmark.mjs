@@ -42,7 +42,7 @@ if (cmd === 'compare') {
   const matches = qKeys.filter(q => A.queryHashes[q] === B.queryHashes[q]).length;
   console.log(`  artifact hash: ${artifactMatch ? 'IDENTICAL' : 'DIFFERENT'}`);
   console.log(`  query results: ${matches}/${qKeys.length} identical`);
-  console.log(`  cross-machine verdict: ${artifactMatch && matches === qKeys.length ? 'PASS (D4-eligible)' : 'FAIL'}`);
+  console.log(`  cross-machine verdict: ${artifactMatch && matches === qKeys.length ? 'PASS (CTL-4-eligible)' : 'FAIL'}`);
   process.exit(artifactMatch && matches === qKeys.length ? 0 : 1);
 }
 
@@ -135,7 +135,7 @@ for (const ad of adapters) {
 
   const level = assignLevel({ rebuildIdentical, queryEMR, queryJaccard: queryJac, queryTau });
   R.level = level;
-  console.log(`  LEVEL: ${level} (D4 requires a cross-machine \`compare\` PASS)`);
+  console.log(`  LEVEL: ${level} (CTL-4 requires a cross-machine \`compare\` PASS)`);
   report.adapters[ad.name] = R;
 
   // fingerprint for cross-machine exchange

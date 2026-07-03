@@ -4,7 +4,7 @@
 
 🌐 [contextbenchmark.com](https://contextbenchmark.com) · ![cross-machine-identity](https://github.com/aabhisrv/contextbenchmark/actions/workflows/cross-machine.yml/badge.svg)
 
-Measures whether an AI system's *context layer* gives the same answer twice: Rebuild-identity, query-stability, drift-under-noise, and cross-machine identity for retrieval indexes, code-context engines, RAG pipelines, and agent-memory systems — with a graded standard (Determinism Levels **D0–D4**) and a verifiable fingerprint format anyone can check.
+Measures whether an AI system's *context layer* gives the same answer twice: Rebuild-identity, query-stability, drift-under-noise, and cross-machine identity for retrieval indexes, code-context engines, RAG pipelines, and agent-memory systems — with a graded standard (**Context Trust Levels (CTL 0–4)**) and a verifiable fingerprint format anyone can check.
 
 > Your agent's answers cannot be reproducible, auditable, or debuggable if the context it reads is different every time. Model inference gets the blame for nondeterminism; the context layer is where determinism is actually *achievable today* — and where almost nobody measures it.
 
@@ -30,15 +30,15 @@ Measures whether an AI system's *context layer* gives the same answer twice: Reb
 | **Drift-Under-Noise (DN)** | One *irrelevant* file lands in the corpus → how much do answers to unrelated queries move? | inject a semantically unrelated document, rebuild, compare per-query results vs base | mean Jaccard@k vs base, noise-in-top-k count, drift score = 1 − Jaccard |
 | **Cross-Machine Identity (CM)** | Different OS/hardware, same version + corpus → same artifact and answers? | fingerprint exchange (`contextbenchmark compare`), CI cross-OS matrix | artifact hash match + per-query result hash matches |
 
-## Determinism Levels — the standard
+## Context Trust Levels — the standard
 
 | Level | Name | Requirement |
 |---|---|---|
-| **D4** | Portable-deterministic | D3 **and** cross-machine fingerprint match (artifact + all query results) on a different OS/arch |
-| **D3** | Machine-deterministic | byte-identical artifacts across rebuilds **and** EMR = 1.0 on query trials |
-| **D2** | Semantically deterministic | artifact bytes differ, but ranked results identical (EMR = 1.0) |
-| **D1** | Rank-stable | results not identical; mean Jaccard@k ≥ 0.9 **and** τ ≥ 0.9 |
-| **D0** | Nondeterministic | below D1 |
+| **CTL-4** | Cross-machine deterministic | CTL-3 **and** cross-machine fingerprint match (artifact + all query results) on a different OS/arch |
+| **CTL-3** | Machine-deterministic | byte-identical artifacts across rebuilds **and** EMR = 1.0 on query trials |
+| **CTL-2** | Stable retrieval | artifact bytes differ, but ranked results identical (EMR = 1.0) |
+| **CTL-1** | Repeatable locally | results not identical; mean Jaccard@k ≥ 0.9 **and** τ ≥ 0.9 |
+| **CTL-0** | Non-repeatable | below D1 |
 
 Drift-Under-Noise is reported alongside the level as an orthogonal score (a system can be perfectly deterministic *and* hypersensitive to irrelevant input — both facts matter).
 
@@ -62,14 +62,14 @@ node contextbenchmark.mjs compare results/<A>.fingerprint.json results/<B>.finge
 
 | Adapter | Rebuild-Identity | Query-Stability (EMR) | Drift-Under-Noise | Level |
 |---|---|---|---|---|
-| `bm25` (lexical reference) | PASS (1 hash / 3 builds) | 1.0 | 0.04 — noise reached top-10 in 2/10 queries (WARN) | **D4** ✓ CI-verified |
-| `spiderbrain` (structural code-context engine) | PASS (1 hash / 3 builds) | 1.0 | **0.00 — noise never surfaced (PASS)** | **D3** |
+| `bm25` (lexical reference) | PASS (1 hash / 3 builds) | 1.0 | 0.04 — noise reached top-10 in 2/10 queries (WARN) | **CTL-4** ✓ CI-verified |
+| `spiderbrain` (structural code-context engine) | PASS (1 hash / 3 builds) | 1.0 | **0.00 — noise never surfaced (PASS)** | **CTL-3** |
 | `emb-minilm` (chunk-embedding RAG reference) | *pending on this machine* | — | — | — |
 
 Two early, honest observations:
 - **The bar is reachable**: a plainly-engineered lexical retriever hits D3. Systems scoring below the free baseline on *determinism* have made a design choice, not hit a law of nature.
 - **Drift separates architectures**: BM25's global IDF statistics shift when any document lands (noise leaked into unrelated top-10s); a structural dependency-graph engine ignored the unconnected file entirely. Embedding indexes and LLM-extraction memory pipelines are expected to sit between and below — run them and see.
-- **D4 is the real test — and it is verified live**: this repo's CI matrix builds fingerprints on ubuntu/windows/macos and compares every pair on each push. Run #1 verified bm25 at D4 (artifact hashes identical, 10/10 query results identical across all three OS pairs). The spiderbrain adapter's D4 run is pending CI-runnable packaging (its fingerprints are published for independent comparison meanwhile).
+- **CTL-4 is the real test — and it is verified live**: this repo's CI matrix builds fingerprints on ubuntu/windows/macos and compares every pair on each push. Run #1 verified bm25 at CTL-4 (artifact hashes identical, 10/10 query results identical across all three OS pairs). The spiderbrain adapter's CTL-4 run is pending CI-runnable packaging (its fingerprints are published for independent comparison meanwhile).
 
 ## Adapters
 
@@ -84,7 +84,7 @@ export async function query(outDir, queryText, k) { /* return [{file, score}] ra
 ```
 
 Shipped adapters:
-- **`bm25`** — dependency-free lexical index. The determinism floor: if you can't beat this baseline's D-level, say why.
+- **`bm25`** — dependency-free lexical index. The determinism floor: if you can't beat this baseline's CTL, say why.
 - **`emb-minilm`** — MiniLM chunk embeddings with exhaustive search (the determinism-*friendliest* RAG configuration; ANN-indexed deployments are usually worse). Requires `@xenova/transformers`.
 - **`spiderbrain`** — deterministic code-context engine (dependency graph + frozen-clock scoring). Requires a local Spiderbrain installation (`SPIDERBRAIN_ENGINE` env); public CLI planned. Its results remain verifiable by anyone through the fingerprint format.
 
@@ -134,7 +134,7 @@ A publishable contextbenchmark result includes: (1) the JSON report, (2) fingerp
 
 ## Roadmap
 
-- [ ] Cross-OS CI matrix publishing reference fingerprints per release (D4 verification)
+- [ ] Cross-OS CI matrix publishing reference fingerprints per release (CTL-4 verification)
 - [ ] Pinned real-repo corpora (zod, hono at exact SHAs) + scale tiers
 - [ ] Adapters: HNSW-configured vector store (expected D1-D2), LLM-extraction memory pipeline (expected D0-D1), hosted memory APIs (Mem0/Zep/Supermemory — vendor PRs welcome)
 - [ ] Provenance: signed fingerprints

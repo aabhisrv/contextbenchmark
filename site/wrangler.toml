@@ -1,0 +1,11 @@
+name = "contextbenchmark-site"
+compatibility_date = "2026-06-01"
+account_id = "03d8d4bab45becd65700b0e168d2af6d"
+
+routes = [
+  { pattern = "contextbenchmark.com", custom_domain = true },
+  { pattern = "www.contextbenchmark.com", custom_domain = true },
+]
+
+[assets]
+directory = "./public"

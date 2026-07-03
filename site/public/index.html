@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ContextBenchmark | The Open Benchmark for AI Context Systems</title>
+<meta name="description" content="ContextBenchmark is the open benchmark for AI context systems. Measure context determinism, retrieval stability, drift resistance, and cross-machine reproducibility with transparent, reproducible, vendor-neutral tests.">
+<link rel="canonical" href="https://contextbenchmark.com/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://contextbenchmark.com/">
+<meta property="og:title" content="ContextBenchmark | The Open Benchmark for AI Context Systems">
+<meta property="og:description" content="Measure the reliability, reproducibility, and stability of AI context systems with open, vendor-neutral benchmarks. Context Trust Levels CTL 0–4, fingerprint-verified.">
+<meta property="og:site_name" content="ContextBenchmark">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ContextBenchmark | The Open Benchmark for AI Context Systems">
+<meta name="twitter:description" content="Can you trust your AI's context? Measure determinism, stability, drift resistance, and cross-machine reproducibility with an open benchmark anyone can run.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://contextbenchmark.com/#website",
+      "url": "https://contextbenchmark.com/",
+      "name": "ContextBenchmark",
+      "description": "The open benchmark for measuring the reliability, reproducibility, and determinism of AI context systems."
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "name": "ContextBenchmark",
+      "codeRepository": "https://github.com/aabhisrv/contextbenchmark",
+      "programmingLanguage": "JavaScript",
+      "license": "https://opensource.org/licenses/MIT",
+      "description": "Open benchmark suite measuring rebuild identity, query stability, drift under noise, and cross-machine identity of AI context systems, graded as Context Trust Levels (CTL 0-4)."
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is ContextBenchmark?",
+          "acceptedAnswer": {"@type": "Answer", "text": "ContextBenchmark is an open, vendor-neutral benchmark that measures whether AI context systems (retrieval indexes, RAG pipelines, agent memory, code-context engines) produce stable, reproducible, and trustworthy results across builds, queries, environments, and noise."}
+        },
+        {
+          "@type": "Question",
+          "name": "Does ContextBenchmark measure language models?",
+          "acceptedAnswer": {"@type": "Answer", "text": "No. It deliberately measures the context layer only. LLM inference nondeterminism is a separate, explicitly out-of-scope problem with its own research literature."}
+        },
+        {
+          "@type": "Question",
+          "name": "What are Context Trust Levels?",
+          "acceptedAnswer": {"@type": "Answer", "text": "CTL 0-4 grade a context system from non-repeatable (CTL 0) to cross-machine deterministic (CTL 4). No vendor can claim a level without publishing verifiable benchmark fingerprints."}
+        },
+        {
+          "@type": "Question",
+          "name": "How do I run ContextBenchmark?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Clone the MIT-licensed repository from GitHub, implement a ~40-line adapter for your system (or use the shipped adapters), and run node contextbenchmark.mjs. Results include a verifiable fingerprint anyone can compare."}
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f6f8f9; --ink: #14202b; --ink2: #44545f; --mut: #6b7a85;
+    --line: #dbe3e8; --acc: #0b6e6e; --acc2: #0b6e6e18; --ok: #177245; --warn: #a86407;
+    --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0e1417; --bg2: #141c21; --ink: #e8eef2; --ink2: #b9c6cf; --mut: #8496a1;
+            --line: #26333b; --acc: #3fb8ae; --acc2: #3fb8ae1c; --ok: #4ec98a; --warn: #e0a458; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--ink); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--acc); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  header.top { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 5; }
+  .nav { display: flex; align-items: center; gap: 22px; padding: 14px 0; font-size: 14.5px; }
+  .brand { font-weight: 750; letter-spacing: -.01em; color: var(--ink); font-size: 16px; }
+  .brand span { color: var(--acc); }
+  .nav .links { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+  .nav a { color: var(--ink2); }
+  section { padding: 64px 0; border-bottom: 1px solid var(--line); }
+  section.alt { background: var(--bg2); }
+  h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.12; letter-spacing: -.02em; font-weight: 780; }
+  h2 { font-size: clamp(23px, 3.4vw, 31px); letter-spacing: -.015em; margin-bottom: 10px; font-weight: 740; }
+  .sub { color: var(--ink2); font-size: 17.5px; max-width: 62ch; }
+  .hero { padding: 84px 0 70px; }
+  .hero .kicker { font-family: var(--mono); font-size: 13px; color: var(--acc); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; }
+  .hero .standard { margin: 18px 0 8px; font-size: 19px; font-weight: 600; color: var(--ink); max-width: 60ch; }
+  .cta { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 11px 20px; border-radius: 8px; font-weight: 650; font-size: 15.5px; border: 1.5px solid var(--acc); }
+  .btn.primary { background: var(--acc); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.08); text-decoration: none; }
+  .btn.ghost { color: var(--acc); }
+  .strip { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 34px; }
+  .chip { font-family: var(--mono); font-size: 12.5px; color: var(--ink2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; background: var(--bg2); }
+  .grid { display: grid; gap: 16px; margin-top: 28px; }
+  .grid.c2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .grid.c3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; background: var(--bg); }
+  .card h3 { font-size: 17px; margin-bottom: 6px; }
+  .card p { color: var(--ink2); font-size: 14.8px; }
+  .card .m { font-family: var(--mono); font-size: 12.5px; color: var(--mut); margin-top: 10px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 26px; font-size: 15px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--mut); font-weight: 650; }
+  .lvl { font-family: var(--mono); font-weight: 700; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .mut { color: var(--mut); }
+  .note { font-size: 13.5px; color: var(--mut); margin-top: 14px; }
+  .hl { border-left: 3px solid var(--acc); background: var(--acc2); padding: 14px 18px; border-radius: 0 10px 10px 0; margin-top: 26px; font-weight: 550; }
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 26px; font-family: var(--mono); font-size: 14px; }
+  .flow .node { border: 1.5px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 16px; }
+  .flow .node.acc { border-color: var(--acc); color: var(--acc); font-weight: 700; }
+  .flow .arr { color: var(--mut); }
+  .stack { font-family: var(--mono); font-size: 14px; margin-top: 26px; border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: inline-block; background: var(--bg); }
+  .stack div { padding: 6px 2px; }
+  .stack .layer { border: 1.5px solid var(--acc); color: var(--acc); border-radius: 8px; padding: 8px 14px; font-weight: 700; margin: 8px 0; }
+  .stack .faded { color: var(--mut); }
+  .check { list-style: none; padding: 0; margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; }
+  .check li { padding-left: 26px; position: relative; color: var(--ink2); }
+  .check li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 800; }
+  .vs td:first-child { color: var(--mut); }
+  .vs td:last-child { font-weight: 600; }
+  footer { padding: 44px 0 60px; color: var(--mut); font-size: 14px; }
+  footer .cols { display: flex; gap: 40px; flex-wrap: wrap; margin-bottom: 22px; }
+  footer a { color: var(--ink2); }
+  code { font-family: var(--mono); font-size: .92em; background: var(--bg2); border: 1px solid var(--line); padding: 1.5px 6px; border-radius: 6px; }
+  pre { font-family: var(--mono); font-size: 13.5px; background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; overflow-x: auto; margin-top: 18px; line-height: 1.55; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap nav">
+    <a class="brand" href="/">Context<span>Benchmark</span></a>
+    <nav class="links" aria-label="Main">
+      <a href="#why">Why</a>
+      <a href="#measures">What it measures</a>
+      <a href="#levels">Trust Levels</a>
+      <a href="#results">Results</a>
+      <a href="#vendors">For vendors</a>
+      <a href="https://github.com/aabhisrv/contextbenchmark">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero" aria-labelledby="hero-h">
+  <div class="wrap">
+    <div class="kicker">Open standard · Vendor neutral · Reproducible</div>
+    <h1 id="hero-h">Can you trust your AI's context?</h1>
+    <p class="standard">ContextBenchmark is the open standard for measuring the reliability, reproducibility, and stability of AI context systems.</p>
+    <p class="sub">Compare context engines — retrieval indexes, RAG pipelines, agent memory, code-context systems — with deterministic metrics, transparent methodology, and reproducible, fingerprint-verified results.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/aabhisrv/contextbenchmark#quick-start">Run the Benchmark</a>
+      <a class="btn ghost" href="#results">View Results</a>
+    </div>
+    <div class="strip" aria-label="Properties">
+      <span class="chip">Open Source</span><span class="chip">MIT Licensed</span><span class="chip">Vendor Neutral</span><span class="chip">Reproducible</span><span class="chip">Cross-Platform Verified</span><span class="chip">Deterministic Metrics</span>
+    </div>
+  </div>
+</section>
+
+<section id="problem" aria-labelledby="problem-h">
+  <div class="wrap">
+    <h2 id="problem-h">AI is only as reliable as the context it receives.</h2>
+    <p class="sub">Modern AI systems depend on context layers to retrieve knowledge, maintain memory, and ground decisions. Yet there is no standard way to measure whether those context systems are stable, reproducible, or trustworthy. ContextBenchmark fills that gap.</p>
+    <div class="stack" role="img" aria-label="An AI stack: the LLM sits on top of the context layer, which sits on files, memory, knowledge and retrieval">
+      <div class="faded">LLM &nbsp;<span style="font-size:12px">(out of scope — measured by model benchmarks)</span></div>
+      <div class="faded" aria-hidden="true">↑</div>
+      <div class="layer">CONTEXT LAYER &nbsp;← measured by ContextBenchmark</div>
+      <div class="faded" aria-hidden="true">↑</div>
+      <div class="faded">files · memory · knowledge · retrieval</div>
+    </div>
+    <p class="hl">The benchmark intentionally measures the context layer, not the language model. LLM inference nondeterminism is a separate, explicitly out-of-scope problem.</p>
+  </div>
+</section>
+
+<section id="why" class="alt" aria-labelledby="why-h">
+  <div class="wrap">
+    <h2 id="why-h">Why AI needs a context benchmark</h2>
+    <p class="sub">AI benchmarks measure model capability. They rarely measure the quality of the context supplied to those models. Yet context determines what an AI knows, remembers, retrieves — and ultimately how reliably it behaves. ContextBenchmark establishes the first open standard for evaluating context infrastructure independently of the language model itself.</p>
+    <table class="vs" aria-label="Existing AI benchmarks compared with ContextBenchmark">
+      <thead><tr><th scope="col">Existing AI benchmarks</th><th scope="col">ContextBenchmark</th></tr></thead>
+      <tbody>
+        <tr><td>Measure the model</td><td>Measures the context layer</td></tr>
+        <tr><td>Focus on reasoning and generation</td><td>Focuses on reproducibility and reliability</td></tr>
+        <tr><td>Vary with every model update</td><td>Designed to remain model-agnostic</td></tr>
+        <tr><td>Evaluate intelligence</td><td>Evaluates trust in context</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="measures" aria-labelledby="measures-h">
+  <div class="wrap">
+    <h2 id="measures-h">What ContextBenchmark measures</h2>
+    <p class="sub">Four test families, each answering one question a production team actually asks.</p>
+    <div class="grid c2">
+      <div class="card">
+        <h3>Rebuild Identity</h3>
+        <p>Can the system recreate byte-identical artifacts from identical input? Independent fresh builds, artifact hash comparison.</p>
+        <div class="m">metric: distinct-hash count over R builds</div>
+      </div>
+      <div class="card">
+        <h3>Query Stability</h3>
+        <p>Does the same question return the same context every time — same files, same order?</p>
+        <div class="m">metrics: Exact Match Rate · Jaccard@k · Kendall τ</div>
+      </div>
+      <div class="card">
+        <h3>Drift Under Noise</h3>
+        <p>Does adding one unrelated file change answers to unrelated questions?</p>
+        <div class="m">metrics: drift score (1 − Jaccard vs base) · noise-in-top-k</div>
+      </div>
+      <div class="card">
+        <h3>Cross-Machine Identity</h3>
+        <p>Do Windows, macOS, and Linux produce identical context? Verified by fingerprint exchange, not by trust.</p>
+        <div class="m">metric: artifact + per-query result hash matches across OS pairs</div>
+      </div>
+    </div>
+    <p class="note">Future families under specification: agent safety, governance, memory integrity, determinism-under-incremental-update.</p>
+  </div>
+</section>
+
+<section id="levels" class="alt" aria-labelledby="levels-h">
+  <div class="wrap">
+    <h2 id="levels-h">Context Trust Levels</h2>
+    <p class="sub">Every implementation receives a Context Trust Level based on published benchmark results.</p>
+    <table aria-label="Context Trust Levels definitions">
+      <thead><tr><th scope="col">Level</th><th scope="col">Name</th><th scope="col">Requirement</th></tr></thead>
+      <tbody>
+        <tr><td class="lvl">CTL 4</td><td>Cross-machine deterministic</td><td>CTL 3, plus identical artifacts and query results across operating systems, verified by fingerprint exchange</td></tr>
+        <tr><td class="lvl">CTL 3</td><td>Machine-deterministic</td><td>Byte-identical artifacts across rebuilds and exact-match query results across trials</td></tr>
+        <tr><td class="lvl">CTL 2</td><td>Stable retrieval</td><td>Artifact bytes differ, but ranked query results are identical every time</td></tr>
+        <tr><td class="lvl">CTL 1</td><td>Repeatable locally</td><td>Results not identical but rank-stable (Jaccard@k ≥ 0.9, τ ≥ 0.9)</td></tr>
+        <tr><td class="lvl">CTL 0</td><td>Non-repeatable</td><td>Below CTL 1</td></tr>
+      </tbody>
+    </table>
+    <p class="note"><strong>No vendor can claim a level without publishing benchmark artifacts.</strong> Every claim is backed by a fingerprint anyone can independently verify — including ours.</p>
+  </div>
+</section>
+
+<section id="results" aria-labelledby="results-h">
+  <div class="wrap">
+    <h2 id="results-h">Current results</h2>
+    <p class="sub">micro-app reference corpus · fingerprints published in the repository · cross-platform verification runs publicly in CI on every push.</p>
+    <table aria-label="Current benchmark results by engine">
+      <thead><tr><th scope="col">Engine</th><th scope="col">CTL</th><th scope="col">Rebuild</th><th scope="col">Query stability</th><th scope="col">Drift under noise</th><th scope="col">Cross-platform</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>BM25 <span class="mut">(lexical reference)</span></td>
+          <td class="lvl">CTL 4</td>
+          <td class="ok">✅ identical</td>
+          <td class="ok">✅ EMR 1.0</td>
+          <td class="warn">⚠️ 0.04 — noise reached top-10 in 2/10 queries</td>
+          <td class="ok">✅ verified in CI: ubuntu · windows · macos</td>
+        </tr>
+        <tr>
+          <td>Spiderbrain <span class="mut">(structural code-context engine)</span></td>
+          <td class="lvl">CTL 3</td>
+          <td class="ok">✅ identical</td>
+          <td class="ok">✅ EMR 1.0</td>
+          <td class="ok">✅ 0.00 — noise never surfaced</td>
+          <td class="mut">Pending CI-runnable packaging (fingerprints published)</td>
+        </tr>
+        <tr>
+          <td>MiniLM embeddings <span class="mut">(RAG reference)</span></td>
+          <td class="lvl mut">—</td>
+          <td class="mut" colspan="4">Run pending — adapter shipped in the repository</td>
+        </tr>
+        <tr>
+          <td class="mut">Mem0 · Zep · Supermemory · LlamaIndex · vector stores</td>
+          <td class="lvl mut">—</td>
+          <td class="mut" colspan="4">Awaiting vendor adapters — <a href="https://github.com/aabhisrv/contextbenchmark/blob/main/adapters/ADAPTER.md">contribute one</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">The reference baseline reaching CTL 4 is the point: the bar is achievable with plain engineering. A system scoring below the free baseline has made a design choice, not hit a law of nature.</p>
+  </div>
+</section>
+
+<section id="fair" class="alt" aria-labelledby="fair-h">
+  <div class="wrap">
+    <h2 id="fair-h">Designed for fair comparison</h2>
+    <p class="sub">ContextBenchmark evaluates context infrastructure — not language models, and not marketing.</p>
+    <ul class="check">
+      <li>Adapter API (~40 lines per system)</li>
+      <li>Open datasets, committed and license-clean</li>
+      <li>Public methodology and metrics</li>
+      <li>Fingerprint verification for every claim</li>
+      <li>No benchmark-specific optimizations allowed</li>
+      <li>Reproducible runs on commodity hardware</li>
+    </ul>
+  </div>
+</section>
+
+<section id="architecture" aria-labelledby="arch-h">
+  <div class="wrap">
+    <h2 id="arch-h">Benchmark architecture</h2>
+    <div class="flow" role="img" aria-label="Pipeline: repository to adapter to context engine to queries to metrics to Context Trust Level">
+      <span class="node">Repository</span><span class="arr">→</span>
+      <span class="node">Adapter</span><span class="arr">→</span>
+      <span class="node">Context Engine</span><span class="arr">→</span>
+      <span class="node">Queries</span><span class="arr">→</span>
+      <span class="node">Metrics</span><span class="arr">→</span>
+      <span class="node acc">Context Trust Level</span>
+    </div>
+    <pre aria-label="Quick start commands">git clone https://github.com/aabhisrv/contextbenchmark && cd contextbenchmark
+node contextbenchmark.mjs run --adapters bm25            # dependency-free baseline
+node contextbenchmark.mjs run --adapters bm25,emb-minilm # + typical-RAG reference
+node contextbenchmark.mjs compare A.fingerprint.json B.fingerprint.json</pre>
+  </div>
+</section>
+
+<section id="vendors" class="alt" aria-labelledby="vendors-h">
+  <div class="wrap">
+    <h2 id="vendors-h">Built for vendors</h2>
+    <p class="sub">Implement a lightweight adapter and benchmark your context system against the same transparent methodology used by every participant.</p>
+    <div class="flow" role="img" aria-label="Vendor path: adapter, run, publish, verify, receive Context Trust Level">
+      <span class="node">Adapter</span><span class="arr">→</span>
+      <span class="node">Run</span><span class="arr">→</span>
+      <span class="node">Publish</span><span class="arr">→</span>
+      <span class="node">Verify</span><span class="arr">→</span>
+      <span class="node acc">Receive CTL</span>
+    </div>
+    <p class="note">Honesty rules apply to everyone: production configuration only, no benchmark-only determinism flags, results disclosed with fingerprints. <a href="https://github.com/aabhisrv/contextbenchmark/blob/main/adapters/ADAPTER.md">Read the adapter contract →</a></p>
+  </div>
+</section>
+
+<section id="research" aria-labelledby="research-h">
+  <div class="wrap">
+    <h2 id="research-h">Research &amp; methodology</h2>
+    <p class="sub">ContextBenchmark builds on reproducible-systems research, retrieval evaluation, and software reproducibility practice — and introduces standardized measurements for deterministic AI context.</p>
+    <div class="grid c3">
+      <div class="card"><h3>Methodology</h3><p>Test-family definitions, trial counts, pass criteria, and level assignment — versioned in the repository.</p></div>
+      <div class="card"><h3>Metrics</h3><p>Exact Match Rate, Jaccard@k, and Kendall τ follow the conventions established for RAG reproducibility measurement (ReproRAG, arXiv:2509.18869).</p></div>
+      <div class="card"><h3>Datasets</h3><p>Committed, deterministic corpora with fixed query sets; pinned real-repository tiers planned.</p></div>
+      <div class="card"><h3>Disclosure</h3><p>A publishable result includes the report, fingerprints, versions, corpus identity, and machine spec. No fingerprint, no claim.</p></div>
+      <div class="card"><h3>Versioning</h3><p>Metric or family changes version the benchmark; levels are always cited with the benchmark version that produced them.</p></div>
+      <div class="card"><h3>Related work</h3><p>Distinct from model benchmarks and from academic context-<em>accuracy</em> evaluation (e.g. ContextBench, unaffiliated); the reliability lane is complementary to both.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="opensource" class="alt" aria-labelledby="os-h">
+  <div class="wrap">
+    <h2 id="os-h">Open source</h2>
+    <p class="sub">ContextBenchmark is community-driven. Every benchmark, adapter, dataset, metric, and result is publicly inspectable and reproducible.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/aabhisrv/contextbenchmark">GitHub</a>
+      <a class="btn ghost" href="https://github.com/aabhisrv/contextbenchmark#readme">Documentation</a>
+      <a class="btn ghost" href="https://github.com/aabhisrv/contextbenchmark/blob/main/adapters/ADAPTER.md">Specification</a>
+      <a class="btn ghost" href="https://github.com/aabhisrv/contextbenchmark/blob/main/CONTRIBUTING.md">Contribute</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div><strong>ContextBenchmark</strong><br>The open benchmark for AI context systems.</div>
+      <div>
+        <a href="https://github.com/aabhisrv/contextbenchmark/blob/main/adapters/ADAPTER.md">Specification</a><br>
+        <a href="https://github.com/aabhisrv/contextbenchmark#readme">Methodology</a><br>
+        <a href="#results">Results</a>
+      </div>
+      <div>
+        <a href="https://github.com/aabhisrv/contextbenchmark/tree/main/adapters">Adapters</a><br>
+        <a href="https://github.com/aabhisrv/contextbenchmark">GitHub</a><br>
+        <a href="https://github.com/aabhisrv/contextbenchmark/blob/main/LICENSE">License (MIT)</a>
+      </div>
+    </div>
+    <div>Benchmark v0.1 · No tracking, no cookies · © 2026 ContextBenchmark contributors</div>
+  </div>
+</footer>
+
+</body>
+</html>
