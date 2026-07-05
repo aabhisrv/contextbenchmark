@@ -26,7 +26,7 @@ export async function query(outDir, queryText, k) {
 ## Optional exports
 
 ```js
-export const artifactFile = 'index.json';
+export const artifactFile = 'index.json';   // optional
 // Rebuild-Identity hashes this single file inside outDir instead of the whole
 // directory. Declare it when your system writes legitimately-variable sidecar
 // files (logs, timestamps) SEPARATE from the artifact of record. The artifact
@@ -44,3 +44,4 @@ export function available() { return true; }
 3. **File-level granularity**: map your system's native results (chunks, memories, symbols) to corpus-relative file paths; document the mapping in a header comment.
 4. **Async is fine** everywhere; the runner awaits both `build` and `query`.
 5. Keep dependencies inside the adapter (dynamic `import()`), so the core benchmark stays dependency-free.
+6. **Auto-checks are in place to detect plagrism** To make sure the benchmark standards are maintained
