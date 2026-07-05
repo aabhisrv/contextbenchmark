@@ -1,0 +1,24 @@
+{
+ "contextbenchmarkFingerprint": 1,
+ "adapter": "emb-minilm",
+ "corpus": "micro-app",
+ "k": 10,
+ "env": {
+  "os": "win32 10.0.19045",
+  "arch": "x64",
+  "node": "v24.14.0"
+ },
+ "artifactHash": "1aea22671b631f3fd56a7f3c615e517e7e5d03868f58300a66f8a610da09fe64",
+ "queryHashes": {
+  "where is the session expiry TTL enforced": "d003ebe42ffcbc484f20ef71240924bc8a01067d321604a705fe41ea74e7e1f4",
+  "how does login verify credentials": "05596ac220c90932acd7d3c9bb3b5b43dff4f8d3bc030adb17318872278dc66a",
+  "cart maximum item limit": "ddad01e355d277514d910f0345ec0d4ffef26795f570e0af5614ae965a4771a2",
+  "how are discounts applied to the cart total": "c9b4882a88b11482efa0e3818b2efbfef4c4d8b802be721214475056b65df5df",
+  "payment retry logic": "84344c822c813f5c74c9769574437ca09e235ef42f7f91b57dcd476f3cd374b4",
+  "refund validation flow": "6eedfc203c7d529861d030c139ee2f071695a700fc597d0b1e786c5387f8b5f4",
+  "product caching behavior": "8e2145319c62e57df3a5ff2f34ed94f3d1d50bfea880c4aeb8f2d04c62d2c2b9",
+  "search result ranking": "527b54bf8c0d679a7c0e5f4c9eb38c857d55a2c3171358782b88d9ac93fec5c0",
+  "event bus subscription": "8f62e9953fc928c45c29c83b55d8c75500b324e1ae3a0273e420868cf6314cae",
+  "which modules read central configuration": "91837ca43c74a1b242272a039058f6c0756340735a621a9e217828888c997684"
+ }
+}

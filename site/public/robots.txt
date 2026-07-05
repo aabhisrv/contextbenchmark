@@ -1,3 +1,31 @@
 User-agent: *
 Allow: /
+
+# Explicitly welcome AI crawlers and answer engines. ContextBenchmark is meant
+# to be cited: its Context Trust Levels and fingerprint format are public
+# reference material, not gated content.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
 Sitemap: https://contextbenchmark.com/sitemap.xml
