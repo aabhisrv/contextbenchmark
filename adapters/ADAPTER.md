@@ -44,4 +44,4 @@ export function available() { return true; }
 3. **File-level granularity**: map your system's native results (chunks, memories, symbols) to corpus-relative file paths; document the mapping in a header comment.
 4. **Async is fine** everywhere; the runner awaits both `build` and `query`.
 5. Keep dependencies inside the adapter (dynamic `import()`), so the core benchmark stays dependency-free.
-6. **Auto-checks are in place to detect plagrism** To make sure the benchmark standards are maintained
+6. **Auto-checks are in place to detect plagiarism** To make sure the benchmark standards are maintained
