@@ -2,14 +2,20 @@
 // Builds a brain (dependency graph + deterministic scores) and queries it over
 // the local MCP server's lexical+structural retrieval.
 //
-// Known defect (2026-07-17, logged with the engine): synganglion.json embeds
-// the git HEAD commit time of the repository enclosing the scanned project
-// (epoch outside git) and the project's absolute path. Rebuild-identity still
-// passes because all rebuilds within a run share that state, but the artifact
-// hash is NOT recomputable across commits or clone locations until the engine
-// stops serialising environment into the artifact of record. Query hashes are
-// unaffected. An earlier version of this header claimed the clock was frozen
-// to the corpus's max content timestamp; that was the intent, not the behaviour.
+// Defect FIXED (2026-07-17, same day it was logged): the engine no longer
+// serialises environment into synganglion.json. generatedAt and the absolute
+// project path moved to a buildinfo.json sidecar; the git-time collection was
+// scoped to the scanned subtree (an unrelated commit to an enclosing repo no
+// longer moves the artifact); the filesystem-mtime fallback and a wall-clock
+// read in the incident-decay scoring were removed. The engine's own CI now
+// locks this (core/tests/artifact-invariance.test.mjs).
+//
+// This adapter ALSO now stages the corpus into a git-free temp copy before
+// building (see build()). The engine legitimately treats the scanned files'
+// own git history as a scoring input (recency/rhythm/incident signals), but
+// this benchmark pins corpus identity by CONTENT HASH alone — so the artifact
+// of record must be a function of corpus bytes only. Staging git-free makes a
+// GitHub tarball user and a git cloner compute the same fingerprint.
 //
 // Requires a local Spiderbrain installation:
 //   set SPIDERBRAIN_ENGINE=<path to spiderbrain-engine>   (build-brain.mjs + platforms/mcp/server-v5.mjs)
@@ -18,8 +24,9 @@
 // by anyone via the fingerprint format (results/*.fingerprint.json).
 
 import { execFileSync, spawn } from 'node:child_process';
-import { readFileSync, mkdirSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync, mkdirSync, existsSync, mkdtempSync, cpSync, rmSync } from 'node:fs';
+import { join, sep } from 'node:path';
+import { tmpdir } from 'node:os';
 import { createHash } from 'node:crypto';
 import { hashDir } from '../lib/metrics.mjs';
 
@@ -64,8 +71,21 @@ export function version() {
 
 export function build(corpusDir, outDir) {
   mkdirSync(outDir, { recursive: true });
-  execFileSync('node', [join(ENGINE, 'scripts/build-brain.mjs'), '--project', corpusDir, '--brain', outDir],
-    { stdio: 'ignore', maxBuffer: 64 * 1024 * 1024 });
+  // Stage the corpus GIT-FREE so the artifact is a pure function of corpus bytes (what
+  // corpus.hash pins): a corpus living inside a git repo would otherwise contribute its
+  // files' commit history (recency/rhythm — legitimate engine inputs, but not pinned by
+  // this benchmark's identity), making a tarball download and a git clone differ.
+  const stage = mkdtempSync(join(tmpdir(), 'cb-corpus-'));
+  try {
+    cpSync(corpusDir, stage, {
+      recursive: true,
+      filter: (src) => !src.split(sep).includes('.git') && !src.split('/').includes('.git'),
+    });
+    execFileSync('node', [join(ENGINE, 'scripts/build-brain.mjs'), '--project', stage, '--brain', outDir],
+      { stdio: 'ignore', maxBuffer: 64 * 1024 * 1024 });
+  } finally {
+    try { rmSync(stage, { recursive: true, force: true }); } catch { /* best-effort */ }
+  }
 }
 
 // one-shot MCP stdio call: initialize -> tools/call spiderbrain_search

@@ -3,7 +3,7 @@
  "benchmarkVersion": "0.1.0",
  "adapter": "spiderbrain",
  "system": {
-  "id": "sha256:a5af3851f62c57da",
+  "id": "sha256:ffdd6784a7c77ce7",
   "source": "content-hash",
   "note": "engine source scope: core, platforms, scripts (node_modules excluded)"
  },
@@ -17,7 +17,7 @@
   "arch": "x64",
   "node": "v24.14.0"
  },
- "artifactHash": "5c49f93d0b069537ce61cfbd98df84b27d99fe51fa081d4bb82732a0def35013",
+ "artifactHash": "b24b5ee74bc4248f7046650f3ef35b2d8286e7930043922f70b9e7ac4a3b19ef",
  "queryHashes": {
   "where is the session expiry TTL enforced": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
   "how does login verify credentials": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",

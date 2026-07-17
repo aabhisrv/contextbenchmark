@@ -149,13 +149,25 @@ HEAD commit time of the repository enclosing the scanned project, the absolute p
 of the project, and the engine version. The first two are reproducibility defects in
 the engine's artifact serialization, found by this re-verification and logged with
 the engine for a fix. All 10 query result hashes were identical under every
-condition, so retrieval behaviour and every metric below are unchanged; but until the
-fix lands, spiderbrain's artifact hash is only recomputable at the stated
-benchmark-repo commit on the build machine, and its CTL 3 byte-identity holds within
-a repository state, not across commits or clones. This paragraph replaces an earlier
-one that blamed the engine update alone, published before the cause was isolated.
-The benchmark caught a real defect in its maintainer's own engine, which is the
-strongest evidence of neutrality this page can offer.
+condition, so retrieval behaviour and every metric below are unchanged. This
+paragraph replaces an earlier one that blamed the engine update alone, published
+before the cause was isolated.
+
+RESOLUTION (2026-07-17, the same day): both defects are fixed in the engine. The
+environment values (generatedAt, absolute project path) moved out of the artifact of
+record into a buildinfo.json sidecar; the git-time collection was scoped to the
+scanned subtree so unrelated commits to an enclosing repository cannot move the
+artifact; and the fix work found and removed two further couplings the isolation
+tests had not surfaced (a filesystem-mtime fallback and a wall-clock read in the
+incident-decay scoring). The engine's CI now locks artifact invariance across
+unrelated commits, clone paths, and no-git copies. The spiderbrain adapter now also
+stages the corpus into a git-free temporary copy before building, so the artifact is
+a pure function of corpus bytes and a GitHub tarball computes the same fingerprint
+as a git clone. The republished fingerprint recomputed identically from a second
+location (compare verdict PASS, CTL-4-eligible; cross-OS CTL 4 still awaits
+CI-runnable engine packaging). The benchmark caught a real defect in its
+maintainer's own engine and the fix shipped the same day, which is the strongest
+evidence of neutrality this page can offer.
 
 | Adapter | Rebuild Identity | Query Stability (EMR) | Drift Under Noise | Level |
 |---|---|---|---|---|
