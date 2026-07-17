@@ -8,11 +8,33 @@
 
 import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { sha256 } from '../lib/metrics.mjs';
 
 export const name = 'emb-minilm';
 const MODEL = 'Xenova/all-MiniLM-L6-v2';
 const CHUNK_LINES = 40, OVERLAP = 8, DIM = 384;
 const EXTS = new Set(['.ts', '.tsx', '.js', '.mjs', '.py', '.md', '.txt']);
+
+// The system here is this file, plus @xenova/transformers, plus the model
+// weights. Only the first two can be pinned. The model is requested by name and
+// not by revision, so an upstream change to Xenova/all-MiniLM-L6-v2 would move
+// the embeddings, and the artifact hash with them, on any machine with a cold
+// cache. That is why this reports `declared` rather than `content-hash`: the id
+// names the inputs it can name, and the weights are not among them. Pinning a
+// revision would make this provable and is worth doing.
+export function version() {
+  let dep = 'unresolved';
+  try {
+    dep = JSON.parse(readFileSync(new URL('../node_modules/@xenova/transformers/package.json', import.meta.url), 'utf8')).version;
+  } catch { /* dependency absent; available() will have skipped the run */ }
+  const self = sha256(readFileSync(fileURLToPath(import.meta.url))).slice(0, 8);
+  return {
+    id: `@xenova/transformers@${dep}+${MODEL}+quantized+adapter:${self}`,
+    source: 'declared',
+    note: 'model pinned by name only, not by revision: weights are not attributable',
+  };
+}
 
 let pipeP = null;
 async function getPipe() {

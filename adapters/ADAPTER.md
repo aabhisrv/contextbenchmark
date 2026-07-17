@@ -35,6 +35,24 @@ export const artifactFile = 'index.json';   // optional
 export function available() { return true; }
 // Return false to skip gracefully on machines missing credentials/binaries.
 // Skipped ≠ passed: reports mark the adapter as not run.
+
+export function version() {
+  return { id: 'sha256:abc123...', source: 'content-hash' };
+}
+// Identify the system under test. Recorded in the fingerprint's `system` field
+// so a hash mismatch can be attributed (changed system vs nondeterminism)
+// instead of misreported as FAIL. Return { id, source, note? } where source is:
+//   'content-hash'  id derives from hashing the system's own source/binaries;
+//                   anyone holding the same system can recompute it. Strongest.
+//   'git-sha'       id is a commit of the system's OWN repository. Only honest
+//                   if that repo actually contains the system you invoke.
+//   'declared'      an asserted identity (dependency versions, model names, a
+//                   hosted API label). All a remote system can offer; say so.
+// A plain string return is accepted and treated as source 'declared'.
+// Optional, but fingerprints without it are unattributable: compare() will
+// report INCONCLUSIVE instead of FAIL when results differ, and PASS
+// (UNVERIFIED) when they match. May be async; a throw is caught and treated
+// as undeclared.
 ```
 
 ## Rules of honesty

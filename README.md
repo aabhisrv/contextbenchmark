@@ -66,7 +66,7 @@ node contextbenchmark.mjs compare results/<A>.fingerprint.json results/<B>.finge
 | `bm25` (lexical reference) | PASS (1 hash / 3 builds) | 1.0 | 0.04, noise reached top-10 in 2/10 queries (WARN) | **CTL-4** verified in CI |
 | `emb-minilm` (exhaustive-search embedding RAG reference) | PASS (1 hash / 2 builds) | 1.0 | 0.16, noise reached top-10 in 9/10 queries (WARN) | **CTL-3** |
 
-**Re-verification, 2026-07-17.** These results were first published on 2026-07-05 and re-run against the same corpus 12 days later. `bm25` and `emb-minilm` rebuilt **byte-identical** artifacts, which is exactly what their levels are supposed to mean. The `spiderbrain` artifact hash changed (`d1abb8c0…` to `8211a57f…`) because its engine was updated in the interim; all 10 query result hashes stayed identical, so retrieval behaviour and every number in the table are unchanged. The published fingerprint is the current one. This is the failure mode the fingerprint format exists to make visible: a stale hash is not a determinism failure, but a determinism claim you cannot recompute is worthless, so the claim gets re-cut whenever the system under test moves.
+**Re-verification, 2026-07-17.** These results were first published on 2026-07-05 and re-run against the same corpus 12 days later. `bm25` and `emb-minilm` rebuilt **byte-identical** artifacts, which is exactly what their levels are supposed to mean. The `spiderbrain` artifact hash did not reproduce, and isolation testing (identical corpus bytes, identical embedded clock, identical absolute path) proved three independent inputs move that artifact: the **git HEAD commit time of the repository enclosing the scanned project**, the **absolute path** of the project, and the engine version. The first two are reproducibility defects in the engine's artifact serialization: the artifact of record embeds environment rather than content. They were found by this benchmark doing its job on its author's own product, and are logged with the engine for a fix. All 10 query result hashes were identical under every condition, so retrieval behaviour and every number in the table are unchanged, but until the fix lands the spiderbrain artifact hash is only recomputable at the stated benchmark-repo commit on the build machine, and its CTL-3 byte-identity holds within a repository state, not across commits or clones. An earlier version of this paragraph blamed the engine update alone; that claim predated the isolation tests and was wrong. Fingerprint format 2 (below) now records system identity, corpus hash, and benchmark version precisely so a mismatch like this is attributable instead of a mystery.
 
 Three honest observations:
 - **The bar is reachable.** A plainly-engineered lexical retriever hits CTL-4. Systems scoring below the free baseline on *determinism* have made a design choice, not hit a law of nature.
@@ -99,17 +99,32 @@ Shipped adapters:
 
 ## Fingerprint format (cross-machine protocol)
 
-`contextbenchmark run` emits `results/<adapter>.<corpus>.<platform>-<arch>.fingerprint.json`:
+`contextbenchmark run` emits `results/<adapter>.<corpus>.<platform>-<arch>.fingerprint.json`. Format 2 (2026-07-17) records the controlled variables of the experiment, not just the independent one:
 
 ```json
 {
-  "contextbenchmarkFingerprint": 1,
-  "adapter": "bm25", "corpus": "micro-app", "k": 10,
+  "contextbenchmarkFingerprint": 2,
+  "benchmarkVersion": "0.1.0",
+  "adapter": "bm25",
+  "system": { "id": "sha256:8685c22bb69f6eb9", "source": "content-hash" },
+  "corpus": { "name": "micro-app", "hash": "sha256 of the corpus tree" },
+  "k": 10,
   "env": { "os": "win32 10.0.19045", "arch": "x64", "node": "v24.14.0" },
   "artifactHash": "sha256…",
   "queryHashes": { "<query>": "sha256 of the ranked file list", "…": "…" }
 }
 ```
+
+Everything above `env` is a controlled variable and must match for a comparison to mean anything; `env` is the independent variable that Cross-Machine Identity deliberately varies. `system` comes from the adapter's optional `version()` export (see [`adapters/ADAPTER.md`](adapters/ADAPTER.md)). `compare` outcomes:
+
+| Outcome | Meaning | Exit |
+|---|---|---|
+| `PASS` | identical artifact + query results (append `(UNVERIFIED)` when identity was undeclared) | 0 |
+| `FAIL` | results differ and the inputs are provably identical: the system is nondeterministic | 1 |
+| `NOT COMPARABLE` | a controlled variable provably differs | 2 |
+| `INCONCLUSIVE` | results differ but an input is unattributable: a changed system produces the same signature as nondeterminism, so no verdict is honest | 3 |
+
+Format 1 fingerprints remain readable and compare as unattributed. The distinction exists because we hit it ourselves: the 2026-07-17 re-verification saw spiderbrain's artifact hash move and format 1 could only call it FAIL, which was the wrong verdict for what turned out to be environment leaking into the artifact.
 
 Fingerprints are small, shareable, and independently verifiable: publish yours with results, and anyone can `compare` against their own run. **A determinism claim without a fingerprint is marketing.**
 

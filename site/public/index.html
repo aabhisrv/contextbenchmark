@@ -420,6 +420,7 @@
     </div>
     <p class="note">The reference baseline (bm25) reaching CTL 4 shows the bar is achievable with plain engineering. A system scoring below the free baseline has made a design choice, not hit a law of nature.</p>
     <p class="note">The drift numbers separate the three architectures clearly: a structural dependency graph (spiderbrain) ignored a file nothing depends on. A lexical index (bm25) leaked the new file into a small number of unrelated result sets, because global term statistics shift slightly whenever a document is added. An exhaustive-search embedding index (emb-minilm), the determinism-friendliest RAG configuration possible, leaked the new file into 9 of 10 unrelated result sets, because a single new document changes the geometry of a shared vector space. That last number is the charitable case: emb-minilm is the most determinism-friendly embedding setup available, and a production ANN index is expected to do worse, not better, because it trades determinism for speed.</p>
+    <p class="note">Re-verification, 2026-07-17: all three adapters were re-run 12 days after first publication. bm25 and emb-minilm rebuilt byte-identical artifacts. Spiderbrain's artifact did not reproduce, and isolation testing traced it to the engine embedding the enclosing repository's git commit time and the project's absolute path in its artifact, a reproducibility defect in our own engine, now logged for a fix. All query results were identical throughout, so every number above is unchanged. Full detail in <a href="/results.json">results.json</a>.</p>
   </div>
 </section>
 
@@ -587,7 +588,7 @@ node contextbenchmark.mjs compare A.fingerprint.json B.fingerprint.json</pre>
         <div class="m">check: the repository</div>
       </div>
     </div>
-    <p class="note">If you find a way this benchmark unfairly favours any system, Spiderbrain included, that is a bug, not a footnote. <a href="https://github.com/aabhisrv/contextbenchmark/issues">Open an issue</a> and it gets fixed in public.</p>
+    <p class="note">If you find a way this benchmark unfairly favours any system, Spiderbrain included, that is a bug, not a footnote. <a href="https://github.com/aabhisrv/contextbenchmark/issues">Open an issue</a> and it gets fixed in public. Proof this works: the 2026-07-17 re-verification caught a reproducibility defect in Spiderbrain's own artifact serialization, and it is disclosed in the <a href="#results">results</a> rather than papered over.</p>
   </div>
 </section>
 

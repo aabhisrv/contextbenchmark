@@ -1,7 +1,15 @@
 {
- "contextbenchmarkFingerprint": 1,
+ "contextbenchmarkFingerprint": 2,
+ "benchmarkVersion": "0.1.0",
  "adapter": "bm25",
- "corpus": "micro-app",
+ "system": {
+  "id": "sha256:8685c22bb69f6eb9",
+  "source": "content-hash"
+ },
+ "corpus": {
+  "name": "micro-app",
+  "hash": "d157a88a7646781d5584ccc860de15083b0682276a249ee2d2e5255e707a0851"
+ },
  "k": 10,
  "env": {
   "os": "win32 10.0.19045",

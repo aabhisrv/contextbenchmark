@@ -94,17 +94,32 @@ established for RAG systems by ReproRAG (arXiv:2509.18869).
 
 ## 5. Fingerprint format
 
-`contextbenchmark run` emits `results/<adapter>.<corpus>.<platform>-<arch>.fingerprint.json`:
+`contextbenchmark run` emits `results/<adapter>.<corpus>.<platform>-<arch>.fingerprint.json`.
+Format 2 (2026-07-17) records the controlled variables, not just the independent one:
 
 ```json
 {
-  "contextbenchmarkFingerprint": 1,
-  "adapter": "bm25", "corpus": "micro-app", "k": 10,
+  "contextbenchmarkFingerprint": 2,
+  "benchmarkVersion": "0.1.0",
+  "adapter": "bm25",
+  "system": { "id": "sha256:8685c22bb69f6eb9", "source": "content-hash" },
+  "corpus": { "name": "micro-app", "hash": "sha256 of the corpus tree" },
+  "k": 10,
   "env": { "os": "win32 10.0.19045", "arch": "x64", "node": "v24.14.0" },
   "artifactHash": "sha256...",
   "queryHashes": { "<query>": "sha256 of the ranked file list" }
 }
 ```
+
+Everything above `env` must match for a comparison to mean anything; `env` is the
+independent variable that cross-machine identity deliberately varies. `system` is the
+adapter's declared identity with its derivation (`content-hash` is recomputable by
+anyone; `declared` is an honest assertion, all a hosted API can offer). `compare`
+refuses mismatched controlled variables as NOT COMPARABLE, reports a difference with
+undeclared identity as INCONCLUSIVE rather than FAIL (a changed system produces the
+same signature as nondeterminism), and marks a pass built on undeclared identity as
+PASS (UNVERIFIED). Format 1 fingerprints remain readable; they compare as
+unattributed.
 
 Fingerprints are small, shareable, and independently verifiable: publish yours with
 your results and anyone can `compare` against their own run. A determinism claim
@@ -127,10 +142,20 @@ Machine-readable form: https://contextbenchmark.com/results.json
 
 These results were first published 2026-07-05 and re-run against the same corpus on
 2026-07-17. bm25 and emb-minilm rebuilt byte-identical artifacts 12 days later, which
-is what their levels are supposed to mean. The spiderbrain artifact hash changed
-(d1abb8c0... to 8211a57f...) because its engine was updated in the interim; all 10
-query result hashes stayed identical, so retrieval behaviour and every metric below
-are unchanged. The published fingerprint is the current one, and it recomputes.
+is what their levels are supposed to mean. The spiderbrain artifact hash did not
+reproduce. Isolation tests with identical corpus bytes, identical embedded clock, and
+identical absolute path proved three independent inputs move that artifact: the git
+HEAD commit time of the repository enclosing the scanned project, the absolute path
+of the project, and the engine version. The first two are reproducibility defects in
+the engine's artifact serialization, found by this re-verification and logged with
+the engine for a fix. All 10 query result hashes were identical under every
+condition, so retrieval behaviour and every metric below are unchanged; but until the
+fix lands, spiderbrain's artifact hash is only recomputable at the stated
+benchmark-repo commit on the build machine, and its CTL 3 byte-identity holds within
+a repository state, not across commits or clones. This paragraph replaces an earlier
+one that blamed the engine update alone, published before the cause was isolated.
+The benchmark caught a real defect in its maintainer's own engine, which is the
+strongest evidence of neutrality this page can offer.
 
 | Adapter | Rebuild Identity | Query Stability (EMR) | Drift Under Noise | Level |
 |---|---|---|---|---|

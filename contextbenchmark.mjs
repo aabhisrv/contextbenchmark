@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import { hashDir, sha256, exactMatchRate, jaccard, kendallTau, meanPairwise, resultKey, assignLevel } from './lib/metrics.mjs';
 import { copyDir, injectNoise, loadQueries } from './lib/corpus.mjs';
+import { FINGERPRINT_FORMAT, compareFingerprints, formatComparison } from './lib/fingerprint.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const args = { _: [] };
@@ -33,17 +34,9 @@ const cmd = args._[0] || 'run';
 // ── compare (cross-machine identity) ────────────────────────────────────────
 if (cmd === 'compare') {
   const [A, B] = [args._[1], args._[2]].map(p => JSON.parse(readFileSync(resolve(p), 'utf8')));
-  console.log(`\ncontextbenchmark compare — cross-machine identity`);
-  console.log(`  A: ${A.env.os}/${A.env.arch} node ${A.env.node}  (${A.adapter})`);
-  console.log(`  B: ${B.env.os}/${B.env.arch} node ${B.env.node}  (${B.adapter})`);
-  if (A.adapter !== B.adapter || A.corpus !== B.corpus) { console.log('  NOT COMPARABLE (different adapter or corpus)'); process.exit(2); }
-  const artifactMatch = A.artifactHash === B.artifactHash;
-  const qKeys = Object.keys(A.queryHashes);
-  const matches = qKeys.filter(q => A.queryHashes[q] === B.queryHashes[q]).length;
-  console.log(`  artifact hash: ${artifactMatch ? 'IDENTICAL' : 'DIFFERENT'}`);
-  console.log(`  query results: ${matches}/${qKeys.length} identical`);
-  console.log(`  cross-machine verdict: ${artifactMatch && matches === qKeys.length ? 'PASS (CTL-4-eligible)' : 'FAIL'}`);
-  process.exit(artifactMatch && matches === qKeys.length ? 0 : 1);
+  const result = compareFingerprints(A, B);
+  for (const line of formatComparison(result)) console.log(line);
+  process.exit(result.exitCode);
 }
 
 // ── run ─────────────────────────────────────────────────────────────────────
@@ -53,6 +46,10 @@ const REBUILDS = Number(args.rebuilds || 3);
 const TRIALS = Number(args.trials || 5);
 const K = Number(args.k || 10);
 const corpusName = CORPUS.replace(/\\/g, '/').split('/').pop();
+// The corpus is a controlled variable, so record what it actually contained.
+// Comparing corpora by name alone lets the inputs change under a claim silently.
+const corpusHash = hashDir(CORPUS).hash;
+const BENCHMARK_VERSION = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8')).version;
 
 const adapterNames = (args.adapters || 'bm25').split(',');
 const adapters = [];
@@ -61,6 +58,20 @@ for (const n of adapterNames) {
   if (mod.available && !mod.available()) { console.log(`[skip] adapter ${n}: not available on this machine`); continue; }
   adapters.push(mod);
 }
+
+// Ask each adapter what it is. Optional: an adapter that cannot answer (a hosted
+// API, say) still runs, and its fingerprints are marked unattributable rather
+// than being refused.
+const systemIdentity = async (ad) => {
+  if (!ad.version) return null;
+  try {
+    const v = await ad.version();
+    return typeof v === 'string' ? { id: v, source: 'declared' } : v;
+  } catch (e) {
+    console.log(`[warn] adapter ${ad.name}: version() threw, identity not recorded (${e.message})`);
+    return null;
+  }
+};
 
 const queries = loadQueries(CORPUS);
 const stamp = `${corpusName}-${adapters.map(a => a.name).join('+')}`;
@@ -138,11 +149,16 @@ for (const ad of adapters) {
   console.log(`  LEVEL: ${level} (CTL-4 requires a cross-machine \`compare\` PASS)`);
   report.adapters[ad.name] = R;
 
-  // fingerprint for cross-machine exchange
-  const fp = { contextbenchmarkFingerprint: 1, adapter: ad.name, corpus: corpusName, k: K,
+  // Fingerprint for cross-machine exchange. Everything above `env` is a
+  // controlled variable and has to match for a comparison to mean anything;
+  // `env` is the independent variable and is expected to differ.
+  const system = await systemIdentity(ad);
+  const fp = { contextbenchmarkFingerprint: FINGERPRINT_FORMAT, benchmarkVersion: BENCHMARK_VERSION,
+    adapter: ad.name, system, corpus: { name: corpusName, hash: corpusHash }, k: K,
     env: report.env, artifactHash: hashes[0], queryHashes };
   const fpPath = resolve(__dirname, 'results', `${ad.name}.${corpusName}.${os.platform()}-${os.arch()}.fingerprint.json`);
   writeFileSync(fpPath, JSON.stringify(fp, null, 1));
+  console.log(`  system: ${system ? `${system.id} (${system.source})` : 'not declared, fingerprints will be unattributable'}`);
   console.log(`  fingerprint → ${fpPath}`);
 }
 

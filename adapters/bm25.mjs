@@ -10,8 +10,17 @@
 
 import { readFileSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { sha256 } from '../lib/metrics.mjs';
 
 export const name = 'bm25';
+
+// This file imports nothing but node builtins, so it IS the system under test in
+// its entirety. That makes its identity provable rather than asserted: hash the
+// source and anyone can recompute the same id from the same bytes.
+export function version() {
+  return { id: `sha256:${sha256(readFileSync(fileURLToPath(import.meta.url))).slice(0, 16)}`, source: 'content-hash' };
+}
 const K1 = 1.2, B = 0.75;
 const EXTS = new Set(['.ts', '.tsx', '.js', '.mjs', '.py', '.md', '.json', '.txt']);
 

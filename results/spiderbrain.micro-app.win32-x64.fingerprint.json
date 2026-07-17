@@ -1,14 +1,23 @@
 {
- "contextbenchmarkFingerprint": 1,
+ "contextbenchmarkFingerprint": 2,
+ "benchmarkVersion": "0.1.0",
  "adapter": "spiderbrain",
- "corpus": "micro-app",
+ "system": {
+  "id": "sha256:a5af3851f62c57da",
+  "source": "content-hash",
+  "note": "engine source scope: core, platforms, scripts (node_modules excluded)"
+ },
+ "corpus": {
+  "name": "micro-app",
+  "hash": "d157a88a7646781d5584ccc860de15083b0682276a249ee2d2e5255e707a0851"
+ },
  "k": 10,
  "env": {
   "os": "win32 10.0.19045",
   "arch": "x64",
   "node": "v24.14.0"
  },
- "artifactHash": "8211a57f0be12b00e006922f50a69433fe7e50569cadeca8b0377085abc614cf",
+ "artifactHash": "5c49f93d0b069537ce61cfbd98df84b27d99fe51fa081d4bb82732a0def35013",
  "queryHashes": {
   "where is the session expiry TTL enforced": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
   "how does login verify credentials": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
