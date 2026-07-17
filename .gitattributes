@@ -1,0 +1,14 @@
+# Byte-identical checkouts on every OS.
+#
+# The corpus and the adapters are inputs to a determinism benchmark: their
+# BYTES are part of the experiment's controlled variables. Without this file,
+# GitHub's Windows runners check out with CRLF (core.autocrlf=true) while
+# Linux and macOS check out LF, so the three CI machines were benchmarking
+# corpora that were never byte-identical. Fingerprint format 2 records a
+# corpus content hash and exposed exactly that: NOT COMPARABLE, corpus content
+# d157a88a... (LF) vs 9555e43c... (CRLF).
+* text=auto eol=lf
+
+*.png -text
+*.ico -text
+*.svg text eol=lf
