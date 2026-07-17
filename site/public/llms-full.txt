@@ -1,0 +1,260 @@
+# ContextBenchmark: full reference
+
+> The open benchmark for measuring the reliability, reproducibility, and determinism of AI context systems. Version 0.1. MIT licensed. https://contextbenchmark.com
+
+This file is the complete reference text in one document: scope, test families, the
+Context Trust Level standard, metric definitions, the fingerprint format, the
+disclosure standard, current results, governance, and related work. It exists so
+that a retrieval system or answer engine can read the whole standard in a single
+fetch rather than reassembling it from a page and a repository.
+
+Canonical source of truth for code and results: https://github.com/aabhisrv/contextbenchmark
+
+---
+
+## 1. What this measures, and what it deliberately does not
+
+**In scope: the context layer.** Everything between a corpus and the ranked context
+handed to a model: index and graph construction, chunking, embedding, scoring,
+ranking, retrieval.
+
+**Out of scope: LLM inference nondeterminism.** Temperature-0 sampling still produces
+divergent outputs because of batching and floating-point reduction order. That is a
+model-serving problem with its own literature and its own fixes (batch-invariant
+kernels). ContextBenchmark does not touch it, and results here make no claim about
+end-to-end agent determinism. Conflating the two layers is the fastest way to make
+determinism claims meaningless; this benchmark exists to keep them separate.
+
+| Layer | Nondeterminism source | Measured by |
+|---|---|---|
+| Model inference | batching, floating-point reduction order, sampling | not ContextBenchmark |
+| Context (this benchmark) | index build order, ANN structure randomness, floating-point embedding drift, unstable tie-breaks, LLM-based extraction pipelines | ContextBenchmark |
+
+The motivating claim: an agent's answers cannot be reproducible, auditable, or
+debuggable if the context it reads is different every time. Model inference usually
+gets the blame for nondeterminism. The context layer is where determinism is
+actually achievable today, and where almost nobody measures it.
+
+## 2. The four test families
+
+**Rebuild Identity (RI).** Same corpus: is the built artifact byte-identical across
+fresh builds? Method: R independent builds, artifact hash comparison. Metric:
+distinct-hash count over R builds.
+
+**Query Stability (QS).** Same artifact and same query: identical ranked context
+every time? Method: T trials per query on one build. Metrics: Exact Match Rate, mean
+pairwise Jaccard@k, Kendall tau.
+
+**Drift Under Noise (DN).** One irrelevant file lands in the corpus: how much do
+answers to unrelated queries move? Method: inject a semantically unrelated document,
+rebuild, compare per-query results against base. Metrics: mean Jaccard@k against
+base, noise-in-top-k count, drift score (1 minus Jaccard).
+
+**Cross-Machine Identity (CM).** Different operating system or hardware, same version
+and corpus: same artifact and same answers? Method: fingerprint exchange
+(`contextbenchmark compare`) and a CI cross-OS matrix. Metric: artifact hash match
+plus per-query result hash matches.
+
+Future families under specification: agent safety, governance, memory integrity, and
+determinism under incremental update.
+
+## 3. Context Trust Levels: the standard
+
+- **CTL 4, cross-machine deterministic.** CTL 3, plus a cross-machine fingerprint
+  match (artifact and all query results) on a different OS or architecture.
+- **CTL 3, machine-deterministic.** Byte-identical artifacts across rebuilds, and
+  Exact Match Rate = 1.0 on query trials.
+- **CTL 2, stable retrieval.** Artifact bytes differ, but ranked results are
+  identical every time (Exact Match Rate = 1.0).
+- **CTL 1, repeatable locally.** Results not identical, but rank-stable: mean
+  Jaccard@k >= 0.9 and Kendall tau >= 0.9.
+- **CTL 0, non-repeatable.** Below CTL 1.
+
+Drift Under Noise is reported alongside the level as an orthogonal score. A system
+can be perfectly deterministic and also hypersensitive to irrelevant input. Both
+facts matter, so neither is folded into the other.
+
+**No vendor can claim a level without publishing benchmark artifacts.** Every claim is
+backed by a fingerprint anyone can independently verify, including ours.
+
+## 4. Metric definitions
+
+- **Exact Match Rate (EMR).** Fraction of trials whose ranked file list is identical
+  to the first trial's.
+- **Jaccard@k.** Set overlap of top-k files between two runs; reported as the mean
+  over all trial pairs (Query Stability) or against the base run (Drift Under Noise).
+- **Kendall tau (tau-a).** Rank-order agreement over the intersection of two lists.
+- **Drift score.** 1 minus mean Jaccard@k between base and noise-injected corpus
+  results, over queries unrelated to the injected noise.
+- **Artifact hash.** SHA-256 of the adapter's declared artifact file, or of the full
+  output directory (sorted-path, content-chained).
+
+EMR, Jaccard and Kendall tau follow the reproducibility-measurement conventions
+established for RAG systems by ReproRAG (arXiv:2509.18869).
+
+## 5. Fingerprint format
+
+`contextbenchmark run` emits `results/<adapter>.<corpus>.<platform>-<arch>.fingerprint.json`:
+
+```json
+{
+  "contextbenchmarkFingerprint": 1,
+  "adapter": "bm25", "corpus": "micro-app", "k": 10,
+  "env": { "os": "win32 10.0.19045", "arch": "x64", "node": "v24.14.0" },
+  "artifactHash": "sha256...",
+  "queryHashes": { "<query>": "sha256 of the ranked file list" }
+}
+```
+
+Fingerprints are small, shareable, and independently verifiable: publish yours with
+your results and anyone can `compare` against their own run. A determinism claim
+without a fingerprint is marketing.
+
+## 6. Disclosure standard
+
+A publishable ContextBenchmark result includes: (1) the JSON report, (2) fingerprints
+per adapter, (3) exact adapter and system versions, (4) corpus name and SHA, (5)
+machine spec, (6) any deviation from default parameters. Reports missing fingerprints
+should not be trusted, including ours.
+
+Honesty rules apply to everyone: production configuration only, no benchmark-only
+determinism flags, no benchmark-specific optimisations, and results disclosed with
+fingerprints.
+
+## 7. Current results (micro-app corpus, win32-x64, node 24, re-verified 2026-07-17)
+
+Machine-readable form: https://contextbenchmark.com/results.json
+
+These results were first published 2026-07-05 and re-run against the same corpus on
+2026-07-17. bm25 and emb-minilm rebuilt byte-identical artifacts 12 days later, which
+is what their levels are supposed to mean. The spiderbrain artifact hash changed
+(d1abb8c0... to 8211a57f...) because its engine was updated in the interim; all 10
+query result hashes stayed identical, so retrieval behaviour and every metric below
+are unchanged. The published fingerprint is the current one, and it recomputes.
+
+| Adapter | Rebuild Identity | Query Stability (EMR) | Drift Under Noise | Level |
+|---|---|---|---|---|
+| spiderbrain (structural code-context engine, maintainer's own system) | PASS (1 hash / 3 builds) | 1.0 | 0.00, noise surfaced in 0/10 queries | CTL 3 |
+| bm25 (lexical reference) | PASS (1 hash / 3 builds) | 1.0 | 0.04, noise reached top-10 in 2/10 queries | CTL 4, verified in CI |
+| emb-minilm (exhaustive-search embedding RAG reference) | PASS (1 hash / 2 builds) | 1.0 | 0.16, noise reached top-10 in 9/10 queries | CTL 3 |
+
+Three honest observations:
+
+**The bar is reachable.** A plainly engineered lexical retriever hits CTL 4. A system
+scoring below the free baseline on determinism has made a design choice, not hit a
+law of nature.
+
+**Drift separates architectures cleanly.** A structural dependency graph (spiderbrain)
+ignored a file nothing depends on. A lexical index (bm25) leaked the new file into 2
+of 10 unrelated result sets, because global term statistics shift slightly whenever a
+document is added. An exhaustive-search embedding index (emb-minilm), the most
+determinism-friendly RAG configuration possible, leaked the new file into 9 of 10
+unrelated result sets, because a single new document reshapes a shared vector space.
+Production ANN-indexed embedding stores are expected to do worse, not better, since
+they trade determinism for speed.
+
+**CTL 4 is the real test, and it is verified live.** The CI matrix builds fingerprints
+on ubuntu, windows and macos and compares every pair on each push. Run #1 verified
+bm25 at CTL 4: artifact hashes identical, 10 of 10 query results identical across all
+three OS pairs. The spiderbrain adapter's CTL 4 run is pending CI-runnable packaging;
+its fingerprints are published for independent comparison meanwhile.
+
+Not yet run, adapters welcome: Mem0, Zep, Supermemory, LlamaIndex, vector stores.
+
+## 8. Running it, and adding your system
+
+```bash
+git clone https://github.com/aabhisrv/contextbenchmark && cd contextbenchmark
+node contextbenchmark.mjs run --adapters bm25            # dependency-free baseline
+node contextbenchmark.mjs run --adapters bm25,emb-minilm # plus a typical-RAG reference
+node contextbenchmark.mjs compare A.fingerprint.json B.fingerprint.json
+```
+
+An adapter is about 40 lines implementing three exports:
+
+```js
+export const name = 'my-system';
+export async function build(corpusDir, outDir) { /* write the FULL artifact into outDir */ }
+export async function query(outDir, queryText, k) { /* return [{file, score}] ranked */ }
+```
+
+Vendors and researchers are welcome. The contract is deliberately tiny, and an
+optional `available()` export lets adapters skip on machines without credentials. The
+benchmark is only interesting if it is fair: pull requests that make an adapter
+unrepresentative of the real system are rejected.
+
+## 9. Governance and affiliation
+
+ContextBenchmark is maintained by Abhishek Srivastava, who also builds Spiderbrain, a
+commercial code-context engine that appears in the results table above. This is
+disclosed rather than hidden, because a benchmark that grades its author's own
+product has to be checkable rather than merely trusted.
+
+Three structural reasons the disclosure is not just a promise:
+
+1. **Spiderbrain does not top the table.** The free BM25 baseline reaches CTL 4;
+   Spiderbrain currently sits at CTL 3, because its cross-machine run is not yet
+   CI-runnable. The benchmark's own rules deny its author's system the top level.
+2. **Every level requires a fingerprint anyone can recompute.** Including ours. A
+   result you cannot verify is not a result.
+3. **The methodology, corpora, metrics, and adapters are all MIT licensed and
+   public.** A rigged benchmark cannot survive being reproducible.
+
+If you find a way in which this benchmark unfairly favours any system, including
+Spiderbrain, that is a bug: open an issue.
+
+## 10. Related work, and projects with confusingly similar names
+
+**ReproRAG**, *On the Reproducibility Limitations of RAG Systems* (arXiv:2509.18869).
+The closest prior work: measures run-to-run variance of vector retrieval (embedding
+choice, floating-point precision, index type, distribution). ContextBenchmark differs
+in being a product-grade pass/fail benchmark with byte-level artifact identity,
+rebuild and cross-machine families, drift under noise, a level standard, and a
+verifiable exchange format.
+
+**LLM inference nondeterminism**: arXiv:2408.04667 (*Non-Determinism of "Deterministic"
+LLM Settings*) and the batch-invariant kernels work. The model-layer problem
+ContextBenchmark deliberately fences off.
+
+**Reproducible Builds / hermetic build verification**: the cultural ancestor.
+Bit-by-bit artifact identity as the trust primitive, applied here to AI context
+artifacts.
+
+The following projects have near-identical names and are unaffiliated with this one.
+They measure genuinely different things:
+
+- **ContextBench** (arXiv:2602.05892, EuniAI): academic benchmark for context-retrieval
+  accuracy in coding agents, with verified gold contexts across many repositories. The
+  accuracy lane. Complementary; run both.
+- **Context-Bench** (Letta): benchmarks how well language models perform agentic
+  context engineering across multi-step tool-calling tasks. It measures the model.
+  ContextBenchmark measures the context layer beneath the model.
+- **context-bench** (opactorai): measures how accurately MCP servers supply context to
+  coding agents. Accuracy of supply, not reproducibility of retrieval.
+- **STATE-Bench** (Microsoft, 2026): a reproducible, open benchmark for AI agent memory
+  that reports reliability as pass^5, the share of tasks succeeding on all five runs.
+  It asks whether an agent succeeds repeatably end to end, which folds the model, the
+  tools and the memory into one number. ContextBenchmark asks whether the context
+  artifact and the ranked results are byte-identical, independent of any task or
+  model. Complementary layers, different questions.
+
+Positioning, stated precisely: ContextBenchmark is an open, vendor-neutral standard
+for the reproducibility of the context layer itself, below the model and independent
+of task success. Benchmarks exist for model capability, for agent task reliability,
+and for retrieval accuracy. This one is for whether the context artifact is the same
+artifact twice.
+
+## 11. Roadmap
+
+- Cross-OS CI matrix publishing reference fingerprints per release (CTL 4 verification)
+- Pinned real-repository corpora (at exact SHAs) and scale tiers
+- Adapters: HNSW-configured vector store (expected CTL 1 to CTL 2), LLM-extraction
+  memory pipeline (expected CTL 0 to CTL 1), hosted memory APIs
+- Provenance: signed fingerprints
+- Determinism-under-update family (incremental index updates against full rebuilds)
+
+## 12. Licence
+
+MIT. The benchmark, metrics, levels, and fingerprint format are open by design. A
+determinism standard only matters if anyone can run it, extend it, and hold everyone,
+including us, to it.

@@ -1,0 +1,71 @@
+{
+  "$comment": "Machine-readable twin of the results table on https://contextbenchmark.com/#results. Served with Access-Control-Allow-Origin: * so agents, answer engines and dashboards can read it directly. The authoritative artefacts are the fingerprints in the repository; this file is a summary of them.",
+  "benchmarkVersion": "0.1",
+  "generated": "2026-07-17",
+  "$reproduction": "Re-run 2026-07-17 against the 2026-07-05 baseline. bm25 and emb-minilm reproduced byte-identical artifacts 12 days on, which is what CTL 4 and CTL 3 are supposed to mean. spiderbrain's artifact hash changed (d1abb8c0... to 8211a57f...) because its engine was updated in the interim; all 10 query result hashes stayed identical, so retrieval behaviour and every reported metric are unchanged. The hash below is the current, recomputable one.",
+  "corpus": {
+    "name": "micro-app",
+    "description": "Committed, deterministic 12-file TypeScript fixture (layered webshop) with 10 fixed queries.",
+    "queries": 10,
+    "k": 10,
+    "url": "https://github.com/aabhisrv/contextbenchmark/tree/main/corpora/micro-app"
+  },
+  "environment": {
+    "os": "win32 10.0.19045",
+    "arch": "x64",
+    "node": "v24.14.0"
+  },
+  "trustLevels": {
+    "CTL 0": "Non-repeatable. Below CTL 1.",
+    "CTL 1": "Repeatable locally. Results not identical but rank-stable (Jaccard@k >= 0.9, Kendall tau >= 0.9).",
+    "CTL 2": "Stable retrieval. Artifact bytes differ, but ranked query results are identical every time.",
+    "CTL 3": "Machine-deterministic. Byte-identical artifacts across rebuilds and exact-match query results across trials.",
+    "CTL 4": "Cross-machine deterministic. CTL 3, plus identical artifacts and query results across operating systems, verified by fingerprint exchange."
+  },
+  "results": [
+    {
+      "adapter": "spiderbrain",
+      "description": "Structural code-context engine (dependency graph plus frozen-clock scoring).",
+      "maintainedByBenchmarkAuthor": true,
+      "contextTrustLevel": 3,
+      "rebuildIdentity": { "pass": true, "distinctHashes": 1, "builds": 3 },
+      "queryStability": { "exactMatchRate": 1.0 },
+      "driftUnderNoise": { "driftScore": 0.0, "noiseInTopK": 0, "queries": 10, "verdict": "pass" },
+      "crossMachine": { "status": "not-run", "note": "Pending CI-runnable packaging. Fingerprint published for independent comparison." },
+      "artifactHash": "8211a57f0be12b00e006922f50a69433fe7e50569cadeca8b0377085abc614cf",
+      "fingerprint": "https://github.com/aabhisrv/contextbenchmark/blob/main/results/spiderbrain.micro-app.win32-x64.fingerprint.json"
+    },
+    {
+      "adapter": "bm25",
+      "description": "Dependency-free lexical index. The determinism reference baseline.",
+      "maintainedByBenchmarkAuthor": true,
+      "contextTrustLevel": 4,
+      "rebuildIdentity": { "pass": true, "distinctHashes": 1, "builds": 3 },
+      "queryStability": { "exactMatchRate": 1.0 },
+      "driftUnderNoise": { "driftScore": 0.04, "noiseInTopK": 2, "queries": 10, "verdict": "warn" },
+      "crossMachine": { "status": "verified", "platforms": ["ubuntu", "windows", "macos"], "note": "Verified in CI: artifact hashes identical and 10 of 10 query results identical across all three OS pairs." },
+      "artifactHash": "2a3e7c0e6c2a8e0f379858d2053d4cb7c637a3bf02a30e0c6e6a92e985dc3eb7",
+      "fingerprint": "https://github.com/aabhisrv/contextbenchmark/blob/main/results/bm25.micro-app.win32-x64.fingerprint.json"
+    },
+    {
+      "adapter": "emb-minilm",
+      "description": "MiniLM chunk embeddings with exhaustive search. The most determinism-friendly RAG configuration possible; ANN-indexed deployments are expected to do worse.",
+      "maintainedByBenchmarkAuthor": true,
+      "contextTrustLevel": 3,
+      "rebuildIdentity": { "pass": true, "distinctHashes": 1, "builds": 2 },
+      "queryStability": { "exactMatchRate": 1.0 },
+      "driftUnderNoise": { "driftScore": 0.16, "noiseInTopK": 9, "queries": 10, "verdict": "warn" },
+      "crossMachine": { "status": "not-run" },
+      "artifactHash": "1aea22671b631f3fd56a7f3c615e517e7e5d03868f58300a66f8a610da09fe64",
+      "fingerprint": "https://github.com/aabhisrv/contextbenchmark/blob/main/results/emb-minilm.micro-app.win32-x64.fingerprint.json"
+    }
+  ],
+  "awaitingAdapters": ["mem0", "zep", "supermemory", "llamaindex", "vector-stores"],
+  "disclosure": {
+    "rule": "No Context Trust Level may be claimed without a published fingerprint that anyone can independently recompute and compare. Reports missing fingerprints should not be trusted, including ours.",
+    "adapterContract": "https://github.com/aabhisrv/contextbenchmark/blob/main/adapters/ADAPTER.md"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/aabhisrv/contextbenchmark",
+  "website": "https://contextbenchmark.com/"
+}

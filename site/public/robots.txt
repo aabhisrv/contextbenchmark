@@ -3,26 +3,59 @@ Allow: /
 
 # Explicitly welcome AI crawlers and answer engines. ContextBenchmark is meant
 # to be cited: its Context Trust Levels and fingerprint format are public
-# reference material, not gated content.
+# reference material, not gated content. The wildcard above already allows every
+# crawler, so the tokens below are a standing statement of intent. They are kept
+# current as vendors rename their agents.
+
+# OpenAI: training, user-triggered fetches, and the ChatGPT Search index.
 User-agent: GPTBot
 Allow: /
 
 User-agent: ChatGPT-User
 Allow: /
 
+User-agent: OAI-SearchBot
+Allow: /
+
+# Anthropic. Claude-Web and anthropic-ai are retired tokens and are deliberately
+# no longer listed; these three are the current set.
 User-agent: ClaudeBot
 Allow: /
 
-User-agent: Claude-Web
+User-agent: Claude-User
 Allow: /
 
-User-agent: PerplexityBot
+User-agent: Claude-SearchBot
 Allow: /
 
+# Google AI surfaces (AI Overviews, Gemini grounding).
 User-agent: Google-Extended
 Allow: /
 
-User-agent: anthropic-ai
+# Perplexity: index crawler and user-triggered fetches.
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Common Crawl, which seeds many open training sets and research corpora.
+User-agent: CCBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+User-agent: DuckAssistBot
 Allow: /
 
 User-agent: cohere-ai

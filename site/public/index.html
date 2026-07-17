@@ -6,50 +6,94 @@
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="theme-color" content="#0b6e6e">
 <title>ContextBenchmark | The Open Benchmark for AI Context Systems</title>
-<meta name="description" content="ContextBenchmark is the open benchmark for AI context systems. Measure context determinism, retrieval stability, drift resistance, and cross-machine reproducibility with transparent, reproducible, vendor-neutral tests.">
+<meta name="description" content="The open benchmark for AI context reliability: determinism, retrieval stability, drift, and cross-machine reproducibility. Context Trust Levels 0 to 4.">
 <link rel="canonical" href="https://contextbenchmark.com/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt">
+<link rel="alternate" type="text/plain" title="llms-full.txt" href="/llms-full.txt">
+<link rel="alternate" type="application/json" title="Current results as JSON" href="/results.json">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://contextbenchmark.com/">
 <meta property="og:title" content="ContextBenchmark | The Open Benchmark for AI Context Systems">
 <meta property="og:description" content="Measure the reliability, reproducibility, and stability of AI context systems with open, vendor-neutral benchmarks. Context Trust Levels CTL 0 to 4, fingerprint verified.">
 <meta property="og:site_name" content="ContextBenchmark">
-<meta property="og:image" content="https://contextbenchmark.com/og-image.svg">
-<meta property="og:image:type" content="image/svg+xml">
+<!-- PNG, not SVG: X, LinkedIn, Facebook, Slack, WhatsApp and iMessage all decline to
+     render SVG link previews, which turns every share into a blank card. -->
+<meta property="og:image" content="https://contextbenchmark.com/og-image.png">
+<meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ContextBenchmark: the open benchmark for reliability, reproducibility, and determinism in AI context systems.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ContextBenchmark | The Open Benchmark for AI Context Systems">
 <meta name="twitter:description" content="Can you trust your AI's context? Measure determinism, stability, drift resistance, and cross-machine reproducibility with an open benchmark anyone can run.">
-<meta name="twitter:image" content="https://contextbenchmark.com/og-image.svg">
+<meta name="twitter:image" content="https://contextbenchmark.com/og-image.png">
+<meta name="twitter:image:alt" content="ContextBenchmark: the open benchmark for AI context systems.">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "@id": "https://contextbenchmark.com/#org",
+      "name": "ContextBenchmark",
+      "url": "https://contextbenchmark.com/",
+      "logo": "https://contextbenchmark.com/apple-touch-icon.png",
+      "description": "Maintainer of ContextBenchmark, the open standard for measuring the reliability and reproducibility of AI context systems.",
+      "sameAs": ["https://github.com/aabhisrv/contextbenchmark"],
+      "founder": { "@type": "Person", "name": "Abhishek Srivastava" }
+    },
+    {
       "@type": "WebSite",
       "@id": "https://contextbenchmark.com/#website",
       "url": "https://contextbenchmark.com/",
       "name": "ContextBenchmark",
-      "description": "The open benchmark for measuring the reliability, reproducibility, and determinism of AI context systems."
+      "description": "The open benchmark for measuring the reliability, reproducibility, and determinism of AI context systems.",
+      "inLanguage": "en",
+      "publisher": { "@id": "https://contextbenchmark.com/#org" }
     },
     {
       "@type": "SoftwareSourceCode",
+      "@id": "https://contextbenchmark.com/#software",
       "name": "ContextBenchmark",
       "codeRepository": "https://github.com/aabhisrv/contextbenchmark",
       "programmingLanguage": "JavaScript",
       "license": "https://opensource.org/licenses/MIT",
+      "version": "0.1",
+      "dateModified": "2026-07-17",
+      "author": { "@id": "https://contextbenchmark.com/#org" },
+      "maintainer": { "@id": "https://contextbenchmark.com/#org" },
+      "citation": "https://arxiv.org/abs/2509.18869",
       "description": "Open benchmark suite measuring rebuild identity, query stability, drift under noise, and cross-machine identity of AI context systems, graded as Context Trust Levels (CTL 0 to 4)."
     },
     {
       "@type": "Dataset",
+      "@id": "https://contextbenchmark.com/#dataset",
       "name": "ContextBenchmark reference results (micro-app corpus)",
-      "description": "Benchmark results for bm25, spiderbrain, and emb-minilm adapters against the committed micro-app reference corpus: rebuild identity, query stability, and drift-under-noise scores.",
-      "url": "https://contextbenchmark.com/#results",
+      "description": "Benchmark results for bm25, spiderbrain, and emb-minilm adapters against the committed micro-app reference corpus: rebuild identity, query stability, drift-under-noise scores, artifact hashes, and assigned Context Trust Levels.",
+      "url": "https://contextbenchmark.com/results.json",
       "license": "https://opensource.org/licenses/MIT",
-      "creator": { "@type": "Organization", "name": "ContextBenchmark" },
-      "distribution": { "@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://github.com/aabhisrv/contextbenchmark/tree/main/results" }
+      "version": "0.1",
+      "dateModified": "2026-07-17",
+      "isAccessibleForFree": true,
+      "keywords": ["determinism", "reproducibility", "RAG", "retrieval", "agent memory", "context engineering", "benchmark"],
+      "creator": { "@id": "https://contextbenchmark.com/#org" },
+      "citation": "https://arxiv.org/abs/2509.18869",
+      "distribution": [
+        {
+          "@type": "DataDownload",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://contextbenchmark.com/results.json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Per-adapter verification fingerprints",
+          "encodingFormat": "application/json",
+          "contentUrl": "https://github.com/aabhisrv/contextbenchmark/blob/main/results/bm25.micro-app.win32-x64.fingerprint.json"
+        }
+      ]
     },
     {
       "@type": "HowTo",
@@ -62,6 +106,7 @@
     },
     {
       "@type": "FAQPage",
+      "@id": "https://contextbenchmark.com/#faq",
       "mainEntity": [
         {
           "@type": "Question",
@@ -82,6 +127,21 @@
           "@type": "Question",
           "name": "How do I run ContextBenchmark?",
           "acceptedAnswer": {"@type": "Answer", "text": "Clone the MIT licensed repository from GitHub, implement a roughly 40-line adapter for your system (or use the shipped adapters), and run node contextbenchmark.mjs. Results include a verifiable fingerprint anyone can compare."}
+        },
+        {
+          "@type": "Question",
+          "name": "Is ContextBenchmark the same as ContextBench, Context-Bench, or STATE-Bench?",
+          "acceptedAnswer": {"@type": "Answer", "text": "No. All are unaffiliated and measure different things. ContextBench (arXiv 2602.05892) measures context-retrieval accuracy in coding agents. Letta's Context-Bench measures how well language models perform agentic context engineering. Opactor's context-bench measures how accurately MCP servers supply context. Microsoft's STATE-Bench measures whether an agent with memory succeeds repeatably end to end, reported as pass^5. ContextBenchmark measures something none of them do: whether the context artifact and its ranked results are byte-identical across rebuilds, queries, noise, and machines, independent of any task or model."}
+        },
+        {
+          "@type": "Question",
+          "name": "Who maintains ContextBenchmark, and is including Spiderbrain a conflict of interest?",
+          "acceptedAnswer": {"@type": "Answer", "text": "ContextBenchmark is maintained by Abhishek Srivastava, who also builds Spiderbrain, one of the systems in the results table. That is disclosed rather than hidden. Three things make it checkable rather than merely trusted: Spiderbrain does not top the table (the free BM25 baseline reaches CTL 4 while Spiderbrain sits at CTL 3), every level requires a published fingerprint anyone can recompute including ours, and the methodology, corpora, metrics, and adapters are all MIT licensed and public. A rigged benchmark cannot survive being reproducible."}
+        },
+        {
+          "@type": "Question",
+          "name": "What is drift under noise?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Drift under noise measures whether adding one irrelevant, unrelated file to a corpus changes the ranked results for queries that have nothing to do with that file. A well-behaved context system should show near-zero drift. On the reference corpus a structural dependency graph scored 0.00, a lexical BM25 index scored 0.04, and an exhaustive-search embedding index scored 0.16, leaking the unrelated file into 9 of 10 unrelated result sets."}
         }
       ]
     }
@@ -114,6 +174,7 @@
   .nav a { color: var(--ink2); }
   .menu-toggle { display: none; }
   .menu-btn { display: none; margin-left: auto; background: none; border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; color: var(--ink); }
+  .menu-btn svg { flex: none; }
 
   section { padding: 64px 0; border-bottom: 1px solid var(--line); }
   section.alt { background: var(--bg2); }
@@ -169,7 +230,15 @@
   @media (max-width: 720px) {
     .hero { padding: 48px 0 40px; }
     section { padding: 44px 0; }
-    .menu-btn { display: inline-flex; align-items: center; gap: 6px; }
+    .menu-btn { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+    /* The checkbox is the real control: it sits transparent on top of the label so
+       it can take focus and respond to Space, which a label cannot do. */
+    .menu-toggle {
+      display: block; position: absolute; top: 50%; right: 0; transform: translateY(-50%);
+      width: 88px; height: 36px; margin: 0; padding: 0; opacity: 0; cursor: pointer; z-index: 6;
+    }
+    .menu-toggle:focus-visible + .menu-btn { outline: 2px solid var(--acc); outline-offset: 2px; }
+    .menu-toggle:checked + .menu-btn { border-color: var(--acc); color: var(--acc); }
     .nav .links {
       display: none; margin-left: 0; flex-direction: column; align-items: flex-start; gap: 2px;
       position: absolute; top: 100%; left: 0; right: 0; background: var(--bg);
@@ -189,8 +258,11 @@
 <header class="top">
   <div class="wrap nav">
     <a class="brand" href="/">Context<span>Benchmark</span></a>
-    <input type="checkbox" id="menuToggle" class="menu-toggle" aria-hidden="true">
-    <label for="menuToggle" class="menu-btn" role="button" aria-label="Open menu" tabindex="0">
+    <!-- A bare <label> is not keyboard-operable: Enter and Space do not toggle it,
+         so the menu was mouse-only. The checkbox itself is the control, styled to
+         look like the button and holding the real focus and aria state. -->
+    <input type="checkbox" id="menuToggle" class="menu-toggle" aria-label="Open menu">
+    <label for="menuToggle" class="menu-btn" aria-hidden="true">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       Menu
     </label>
@@ -199,7 +271,8 @@
       <a href="#measures">What it measures</a>
       <a href="#levels">Trust Levels</a>
       <a href="#results">Results</a>
-      <a href="#vendors">For vendors</a>
+      <a href="#faq">FAQ</a>
+      <a href="#governance">Governance</a>
       <a href="https://github.com/aabhisrv/contextbenchmark">GitHub</a>
     </nav>
   </div>
@@ -210,7 +283,7 @@
   <div class="wrap">
     <div class="kicker">Open standard &middot; Vendor neutral &middot; Reproducible</div>
     <h1 id="hero-h">Can you trust your AI's context?</h1>
-    <p class="standard">ContextBenchmark is the open standard for measuring the reliability, reproducibility, and stability of AI context systems.</p>
+    <p class="standard">ContextBenchmark is an open standard for measuring the reliability, reproducibility, and stability of AI context systems.</p>
     <p class="sub">Compare context engines: retrieval indexes, RAG pipelines, agent memory, code-context systems, with deterministic metrics, transparent methodology, and reproducible, fingerprint-verified results.</p>
     <div class="cta">
       <a class="btn primary" href="https://github.com/aabhisrv/contextbenchmark#quick-start">Run the Benchmark</a>
@@ -240,7 +313,7 @@
 <section id="why" class="alt" aria-labelledby="why-h">
   <div class="wrap">
     <h2 id="why-h">Why AI needs a context benchmark</h2>
-    <p class="sub">AI benchmarks measure model capability. They rarely measure the quality of the context supplied to those models. Context determines what an AI knows, remembers, and retrieves, and it ultimately shapes how reliably the AI behaves. ContextBenchmark establishes the first open standard for evaluating context infrastructure independently of the language model itself.</p>
+    <p class="sub">AI benchmarks measure model capability. They rarely measure the quality of the context supplied to those models. Context determines what an AI knows, remembers, and retrieves, and it ultimately shapes how reliably the AI behaves. ContextBenchmark is an open standard for evaluating context infrastructure independently of the language model itself, and independently of whether any downstream task happens to succeed.</p>
     <div class="tbl-wrap">
     <table class="vs" aria-label="Existing AI benchmarks compared with ContextBenchmark">
       <thead><tr><th scope="col">Existing AI benchmarks</th><th scope="col">ContextBenchmark</th></tr></thead>
@@ -308,13 +381,13 @@
 <section id="results" aria-labelledby="results-h">
   <div class="wrap">
     <h2 id="results-h">Current results</h2>
-    <p class="sub">micro-app reference corpus, updated 2026-07-05 &middot; fingerprints published in the repository &middot; cross-platform verification runs publicly in CI on every push.</p>
+    <p class="sub">micro-app reference corpus, re-verified 2026-07-17 &middot; fingerprints published in the repository &middot; cross-platform verification runs publicly in CI on every push &middot; <a href="/results.json">same results as JSON</a>.</p>
     <div class="tbl-wrap">
     <table aria-label="Current benchmark results by engine">
       <thead><tr><th scope="col">Engine</th><th scope="col">CTL</th><th scope="col">Rebuild</th><th scope="col">Query stability</th><th scope="col">Drift under noise</th><th scope="col">Cross-platform</th></tr></thead>
       <tbody>
         <tr>
-          <td>Spiderbrain <span class="mut">(structural code-context engine)</span></td>
+          <td>Spiderbrain <span class="mut">(structural code-context engine)</span> <a href="#governance" class="lvl" style="font-size:11.5px">ours</a></td>
           <td class="lvl">CTL 3</td>
           <td class="ok">Identical</td>
           <td class="ok">EMR 1.0</td>
@@ -346,7 +419,7 @@
     </table>
     </div>
     <p class="note">The reference baseline (bm25) reaching CTL 4 shows the bar is achievable with plain engineering. A system scoring below the free baseline has made a design choice, not hit a law of nature.</p>
-    <p class="note">The drift numbers separate the three architectures clearly: a structural dependency graph (spiderbrain) ignored a file nothing depends on. A lexical index (bm25) leaked the new file into a small number of unrelated result sets, because global term statistics shift slightly whenever a document is added. An exhaustive-search embedding index (emb-minilm), the determinism-friendliest RAG configuration possible, leaked the new file into 9 of 10 unrelated result sets, because a single new document changes the geometry of a shared vector space. This is the strongest, most representative production configuration ordinarily gets worse, not better (ANN indexes trade determinism for speed).</p>
+    <p class="note">The drift numbers separate the three architectures clearly: a structural dependency graph (spiderbrain) ignored a file nothing depends on. A lexical index (bm25) leaked the new file into a small number of unrelated result sets, because global term statistics shift slightly whenever a document is added. An exhaustive-search embedding index (emb-minilm), the determinism-friendliest RAG configuration possible, leaked the new file into 9 of 10 unrelated result sets, because a single new document changes the geometry of a shared vector space. That last number is the charitable case: emb-minilm is the most determinism-friendly embedding setup available, and a production ANN index is expected to do worse, not better, because it trades determinism for speed.</p>
   </div>
 </section>
 
@@ -404,12 +477,117 @@ node contextbenchmark.mjs compare A.fingerprint.json B.fingerprint.json</pre>
     <p class="sub">ContextBenchmark builds on reproducible-systems research, retrieval evaluation, and software reproducibility practice, and introduces standardized measurements for deterministic AI context.</p>
     <div class="grid c3">
       <div class="card"><h3>Methodology</h3><p>Test-family definitions, trial counts, pass criteria, and level assignment, versioned in the repository.</p></div>
-      <div class="card"><h3>Metrics</h3><p>Exact Match Rate, Jaccard@k, and Kendall &tau; follow the conventions established for RAG reproducibility measurement (ReproRAG, arXiv:2509.18869).</p></div>
+      <div class="card"><h3>Metrics</h3><p>Exact Match Rate, Jaccard@k, and Kendall &tau; follow the conventions established for RAG reproducibility measurement (<a href="https://arxiv.org/abs/2509.18869">ReproRAG, arXiv:2509.18869</a>).</p></div>
       <div class="card"><h3>Datasets</h3><p>Committed, deterministic corpora with fixed query sets; pinned real-repository tiers planned.</p></div>
       <div class="card"><h3>Disclosure</h3><p>A publishable result includes the report, fingerprints, versions, corpus identity, and machine spec. No fingerprint, no claim.</p></div>
       <div class="card"><h3>Versioning</h3><p>Metric or family changes version the benchmark; levels are always cited with the benchmark version that produced them.</p></div>
-      <div class="card"><h3>Related work</h3><p>Distinct from model benchmarks and from academic context-<em>accuracy</em> evaluation (for example ContextBench, unaffiliated); the reliability lane is complementary to both. No dedicated determinism or reproducibility benchmark currently appears in general AI-benchmark catalogs.</p></div>
+      <div class="card"><h3>Out of scope</h3><p>LLM inference nondeterminism, a model-serving problem with its own literature (<a href="https://arxiv.org/abs/2408.04667">arXiv:2408.04667</a>) and its own fixes. Fenced off deliberately: conflating the layers makes determinism claims meaningless.</p></div>
+      <div class="card"><h3>Ancestry</h3><p>Reproducible Builds and hermetic build verification: bit-by-bit artifact identity as the trust primitive, applied here to AI context artifacts.</p></div>
     </div>
+  </div>
+</section>
+
+<section id="related" aria-labelledby="related-h">
+  <div class="wrap">
+    <h2 id="related-h">Related work, and projects we are not</h2>
+    <p class="sub">Several unaffiliated projects have near-identical names, and at least one measures something genuinely adjacent. Here is exactly where each one sits, so you can pick the right tool rather than the closest name.</p>
+    <div class="tbl-wrap">
+    <table aria-label="ContextBenchmark compared with similarly named and adjacent projects">
+      <thead><tr><th scope="col">Project</th><th scope="col">What it measures</th><th scope="col">Relationship</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>ContextBenchmark</strong> <span class="mut">(this one)</span></td>
+          <td>Whether the context artifact and its ranked results are byte-identical across rebuilds, queries, noise, and machines. Independent of any task or model.</td>
+          <td class="mut">The reliability lane, at the context layer</td>
+        </tr>
+        <tr>
+          <td><a href="https://arxiv.org/abs/2602.05892">ContextBench</a> <span class="mut">(academic, EuniAI)</span></td>
+          <td>Context-retrieval <em>accuracy</em> in coding agents, against verified gold contexts.</td>
+          <td class="mut">Unaffiliated. Accuracy, not reliability. Complementary: run both</td>
+        </tr>
+        <tr>
+          <td><a href="https://www.letta.com/blog/context-bench">Context-Bench</a> <span class="mut">(Letta)</span></td>
+          <td>How well <em>language models</em> perform agentic context engineering across multi-step tool-calling tasks.</td>
+          <td class="mut">Unaffiliated. Benchmarks the model, not the layer beneath it</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/opactorai/context-bench">context-bench</a> <span class="mut">(opactor)</span></td>
+          <td>How accurately MCP servers supply context to coding agents.</td>
+          <td class="mut">Unaffiliated. Accuracy of supply, not reproducibility of retrieval</td>
+        </tr>
+        <tr>
+          <td><a href="https://opensource.microsoft.com/blog/2026/05/19/introducing-state-bench-a-benchmark-for-ai-agent-memory/">STATE-Bench</a> <span class="mut">(Microsoft)</span></td>
+          <td>Whether an agent with memory succeeds repeatably end to end, reported as pass^5: the share of tasks that pass on all five runs.</td>
+          <td class="mut">Unaffiliated. The closest neighbour, one layer up</td>
+        </tr>
+        <tr>
+          <td><a href="https://arxiv.org/abs/2509.18869">ReproRAG</a> <span class="mut">(arXiv:2509.18869)</span></td>
+          <td>Run-to-run variance of vector retrieval: embedding choice, floating-point precision, index type.</td>
+          <td class="mut">The closest prior work, and where our metric conventions come from</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="hl">The distinction that matters most: STATE-Bench asks whether the <strong>agent</strong> succeeds repeatably, which folds model, tools, and memory into one number. ContextBenchmark asks whether the <strong>context</strong> is the same context twice, with no model in the loop at all. A system can pass one and fail the other, which is the reason to measure both.</p>
+    <p class="note">Positioning, stated precisely: benchmarks exist for model capability, for agent task reliability, and for retrieval accuracy. This one is for the reproducibility of the context layer itself, below the model and independent of task success.</p>
+  </div>
+</section>
+
+<section id="faq" class="alt" aria-labelledby="faq-h">
+  <div class="wrap">
+    <h2 id="faq-h">Questions</h2>
+    <div class="grid c2">
+      <div class="card">
+        <h3>What is ContextBenchmark?</h3>
+        <p>ContextBenchmark is an open, vendor-neutral benchmark that measures whether AI context systems (retrieval indexes, RAG pipelines, agent memory, code-context engines) produce stable, reproducible, and trustworthy results across builds, queries, environments, and noise.</p>
+      </div>
+      <div class="card">
+        <h3>Does ContextBenchmark measure language models?</h3>
+        <p>No. It deliberately measures the context layer only. LLM inference nondeterminism is a separate, explicitly out-of-scope problem with its own research literature.</p>
+      </div>
+      <div class="card">
+        <h3>What are Context Trust Levels?</h3>
+        <p>CTL 0 to 4 grade a context system from non-repeatable (CTL 0) to cross-machine deterministic (CTL 4). No vendor can claim a level without publishing verifiable benchmark fingerprints. <a href="#levels">See the full ladder</a>.</p>
+      </div>
+      <div class="card">
+        <h3>How do I run ContextBenchmark?</h3>
+        <p>Clone the MIT licensed repository from GitHub, implement a roughly 40-line adapter for your system (or use the shipped adapters), and run <code>node contextbenchmark.mjs</code>. Results include a verifiable fingerprint anyone can compare.</p>
+      </div>
+      <div class="card">
+        <h3>What is drift under noise?</h3>
+        <p>Whether adding one irrelevant file to a corpus changes the ranked results for queries that have nothing to do with it. A well-behaved system shows near-zero drift. On our reference corpus the three architectures scored 0.00, 0.04, and 0.16. <a href="#results">See why</a>.</p>
+      </div>
+      <div class="card">
+        <h3>Is ContextBenchmark the same as ContextBench, Context-Bench, or STATE-Bench?</h3>
+        <p>No. All are unaffiliated and measure different things: context-retrieval accuracy in coding agents, how well language models perform agentic context engineering, and whether an agent with memory succeeds repeatably end to end. ContextBenchmark measures something none of them do: whether the context artifact and its ranked results are byte-identical, independent of any task or model. <a href="#related">Full comparison</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="governance" aria-labelledby="governance-h">
+  <div class="wrap">
+    <h2 id="governance-h">Who runs this, and why you can check it</h2>
+    <p class="sub">ContextBenchmark is maintained by Abhishek Srivastava, who also builds <strong>Spiderbrain</strong>, one of the systems in the results table above. That is a conflict of interest, so it is disclosed here rather than left for you to discover.</p>
+    <p class="sub" style="margin-top:14px">A benchmark that grades its author's own product has to be checkable, not merely trusted. Three things make it so:</p>
+    <div class="grid c3">
+      <div class="card">
+        <h3>It does not win</h3>
+        <p>The free BM25 baseline reaches CTL 4. Spiderbrain sits at CTL 3, because its cross-machine run is not yet CI-runnable. The rules deny the author's own system the top level.</p>
+        <div class="m">check: the results table</div>
+      </div>
+      <div class="card">
+        <h3>Every claim carries a fingerprint</h3>
+        <p>Including ours. A level without a published, recomputable fingerprint is not a result. Recompute ours and compare; that is the whole point of the format.</p>
+        <div class="m">check: results/*.fingerprint.json</div>
+      </div>
+      <div class="card">
+        <h3>All of it is public</h3>
+        <p>Methodology, corpora, metrics, and every adapter are MIT licensed and inspectable. A rigged benchmark cannot survive being reproducible by strangers.</p>
+        <div class="m">check: the repository</div>
+      </div>
+    </div>
+    <p class="note">If you find a way this benchmark unfairly favours any system, Spiderbrain included, that is a bug, not a footnote. <a href="https://github.com/aabhisrv/contextbenchmark/issues">Open an issue</a> and it gets fixed in public.</p>
   </div>
 </section>
 
@@ -434,16 +612,23 @@ node contextbenchmark.mjs compare A.fingerprint.json B.fingerprint.json</pre>
       <div>
         <a href="https://github.com/aabhisrv/contextbenchmark/blob/main/adapters/ADAPTER.md">Specification</a><br>
         <a href="https://github.com/aabhisrv/contextbenchmark#readme">Methodology</a><br>
-        <a href="#results">Results</a>
+        <a href="#results">Results</a><br>
+        <a href="#related">Related work</a>
       </div>
       <div>
         <a href="https://github.com/aabhisrv/contextbenchmark/tree/main/adapters">Adapters</a><br>
         <a href="https://github.com/aabhisrv/contextbenchmark">GitHub</a><br>
         <a href="https://github.com/aabhisrv/contextbenchmark/blob/main/LICENSE">License (MIT)</a><br>
-        <a href="/llms.txt">llms.txt</a>
+        <a href="#governance">Governance</a>
+      </div>
+      <div>
+        <a href="/results.json">results.json</a><br>
+        <a href="/llms.txt">llms.txt</a><br>
+        <a href="/llms-full.txt">llms-full.txt</a><br>
+        <a href="/sitemap.xml">sitemap.xml</a>
       </div>
     </div>
-    <div>Benchmark v0.1 &middot; No tracking, no cookies &middot; &copy; 2026 ContextBenchmark contributors</div>
+    <div>Benchmark v0.1 &middot; Maintained by Abhishek Srivastava (<a href="#governance">affiliation disclosure</a>) &middot; No tracking, no cookies &middot; &copy; 2026 ContextBenchmark contributors</div>
   </div>
 </footer>
 

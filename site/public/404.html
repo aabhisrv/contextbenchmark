@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#0b6e6e">
+<title>Page not found | ContextBenchmark</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f6f8f9; --ink: #14202b; --ink2: #44545f; --mut: #6b7a85;
+    --line: #dbe3e8; --acc: #0b6e6e;
+    --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0e1417; --bg2: #141c21; --ink: #e8eef2; --ink2: #b9c6cf; --mut: #8496a1;
+            --line: #26333b; --acc: #3fb8ae; }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--ink); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+         min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .wrap { max-width: 560px; }
+  .code { font-family: var(--mono); font-size: 13px; color: var(--acc); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; letter-spacing: -.02em; font-weight: 780; }
+  p { color: var(--ink2); margin-top: 12px; }
+  ul { margin: 18px 0 0; padding-left: 20px; color: var(--ink2); }
+  li { margin-top: 6px; }
+  a { color: var(--acc); }
+  .cta { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 10px 18px; border-radius: 8px; font-weight: 650; font-size: 15px;
+         border: 1.5px solid var(--acc); text-decoration: none; }
+  .btn.primary { background: var(--acc); color: #fff; }
+  .btn.ghost { color: var(--acc); }
+  .note { font-size: 13.5px; color: var(--mut); margin-top: 26px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="code">404 &middot; Not found</div>
+  <h1>That page does not exist.</h1>
+  <p>The benchmark itself is one page, plus its source and results. One of these is probably what you wanted:</p>
+  <ul>
+    <li><a href="/#levels">Context Trust Levels</a>, the CTL 0 to CTL 4 standard</li>
+    <li><a href="/#results">Current results</a>, and <a href="/results.json">the same results as JSON</a></li>
+    <li><a href="/#measures">What the benchmark measures</a>, the four test families</li>
+    <li><a href="https://github.com/aabhisrv/contextbenchmark">The repository</a>, for code, adapters and fingerprints</li>
+    <li><a href="/llms-full.txt">The full reference text</a>, methodology and fingerprint format in one file</li>
+  </ul>
+  <div class="cta">
+    <a class="btn primary" href="/">Back to the benchmark</a>
+    <a class="btn ghost" href="https://github.com/aabhisrv/contextbenchmark">GitHub</a>
+  </div>
+  <p class="note">If a link here sent you to this page, that is a bug worth reporting: <a href="https://github.com/aabhisrv/contextbenchmark/issues">open an issue</a>.</p>
+</main>
+</body>
+</html>

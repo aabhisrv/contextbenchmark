@@ -58,13 +58,15 @@ node contextbenchmark.mjs run --adapters bm25,emb-minilm,spiderbrain --rebuilds 
 node contextbenchmark.mjs compare results/<A>.fingerprint.json results/<B>.fingerprint.json
 ```
 
-## Current results (micro-app corpus, win32-x64, node 24, updated 2026-07-05)
+## Current results (micro-app corpus, win32-x64, node 24, re-verified 2026-07-17)
 
 | Adapter | Rebuild-Identity | Query-Stability (EMR) | Drift-Under-Noise | Level |
 |---|---|---|---|---|
 | `spiderbrain` (structural code-context engine) | PASS (1 hash / 3 builds) | 1.0 | **0.00, noise never surfaced in 0/10 queries (PASS)** | **CTL-3** |
 | `bm25` (lexical reference) | PASS (1 hash / 3 builds) | 1.0 | 0.04, noise reached top-10 in 2/10 queries (WARN) | **CTL-4** verified in CI |
 | `emb-minilm` (exhaustive-search embedding RAG reference) | PASS (1 hash / 2 builds) | 1.0 | 0.16, noise reached top-10 in 9/10 queries (WARN) | **CTL-3** |
+
+**Re-verification, 2026-07-17.** These results were first published on 2026-07-05 and re-run against the same corpus 12 days later. `bm25` and `emb-minilm` rebuilt **byte-identical** artifacts, which is exactly what their levels are supposed to mean. The `spiderbrain` artifact hash changed (`d1abb8c0…` to `8211a57f…`) because its engine was updated in the interim; all 10 query result hashes stayed identical, so retrieval behaviour and every number in the table are unchanged. The published fingerprint is the current one. This is the failure mode the fingerprint format exists to make visible: a stale hash is not a determinism failure, but a determinism claim you cannot recompute is worthless, so the claim gets re-cut whenever the system under test moves.
 
 Three honest observations:
 - **The bar is reachable.** A plainly-engineered lexical retriever hits CTL-4. Systems scoring below the free baseline on *determinism* have made a design choice, not hit a law of nature.
@@ -126,6 +128,8 @@ EMR/Jaccard/τ follow the reproducibility-measurement conventions established fo
 - **ReproRAG**: *On the Reproducibility Limitations of RAG Systems* (arXiv:2509.18869). The closest prior work; measures run-to-run variance of vector retrieval (embedding choice, FP precision, index type, distribution). contextbenchmark differs in being a *product-grade pass/fail benchmark* with byte-level artifact identity, rebuild and cross-machine families, drift-under-noise, a level standard, and a verifiable exchange format.
 - **LLM inference nondeterminism**: arXiv:2408.04667 (*Non-Determinism of "Deterministic" LLM Settings*) and Thinking Machines' batch-invariant kernels work. The model-layer problem contextbenchmark deliberately fences off.
 - **ContextBench** (arXiv:2602.05892): an academic benchmark for context-retrieval *accuracy* in coding agents, the accuracy lane. contextbenchmark is the determinism and reliability lane, is not affiliated with ContextBench, and the two are complementary. Run both.
+- **STATE-Bench** (Microsoft, 2026): a reproducible, open benchmark for agent *memory*, reporting reliability as `pass^5` (the share of tasks succeeding on all five runs). The nearest neighbour, one layer up: it asks whether the **agent** succeeds repeatably end to end, which folds model, tools, and memory into a single number. contextbenchmark asks whether the **context artifact and its ranked results** are byte-identical, with no model in the loop. Unaffiliated; a system can pass one and fail the other, which is the reason to measure both.
+- **Context-Bench** (Letta) and **context-bench** (opactorai): unaffiliated projects with near-identical names. The former benchmarks how well *language models* perform agentic context engineering; the latter measures how accurately *MCP servers* supply context. Neither measures reproducibility.
 - **Reproducible Builds / hermetic build verification**: the cultural ancestor. Bit-by-bit artifact identity as the trust primitive, applied here to AI context artifacts.
 - **General AI-benchmark catalogs** (for example [awesome-ai-benchmarks](https://github.com/panilya/awesome-ai-benchmarks), 114+ benchmarks across 24 subcategories): as of this writing, none list a dedicated determinism or reproducibility category for context/RAG/agent-memory systems. The closest existing entries evaluate episodic-memory *capability*, not reproducibility. contextbenchmark is a candidate first entry for that gap.
 

@@ -2,6 +2,9 @@ name = "contextbenchmark-site"
 compatibility_date = "2026-06-01"
 account_id = "03d8d4bab45becd65700b0e168d2af6d"
 
+# src/index.js only canonicalises host and scheme; everything else is static assets.
+main = "./src/index.js"
+
 routes = [
   { pattern = "contextbenchmark.com", custom_domain = true },
   { pattern = "www.contextbenchmark.com", custom_domain = true },
@@ -9,3 +12,8 @@ routes = [
 
 [assets]
 directory = "./public"
+binding = "ASSETS"
+# Assets are served before Worker code unless we ask for the Worker first, and the
+# canonical redirect has to see the www and http requests to be able to fix them.
+run_worker_first = true
+not_found_handling = "404-page"
