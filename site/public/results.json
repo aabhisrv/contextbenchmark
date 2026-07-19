@@ -2,7 +2,7 @@
   "$comment": "Machine-readable twin of the results table on https://contextbenchmark.com/#results. Served with Access-Control-Allow-Origin: * so agents, answer engines and dashboards can read it directly. The authoritative artefacts are the fingerprints in the repository; this file is a summary of them.",
   "benchmarkVersion": "0.1",
   "generated": "2026-07-17",
-  "$reproduction": "Re-run 2026-07-17 against the 2026-07-05 baseline. bm25 and emb-minilm reproduced byte-identical artifacts 12 days on, which is what their levels are supposed to mean. spiderbrain's artifact hash did not reproduce. Isolation tests (identical corpus bytes, identical embedded clock, identical absolute path) proved three independent inputs move that artifact: the git HEAD commit time of the repository enclosing the scanned project, the absolute path of the project, and the engine version. The first two are reproducibility defects in the engine's artifact serialization, found by this re-verification and logged for a fix; the third is ordinary version change, now recorded in the fingerprint's system field. All 10 query result hashes were identical under every condition, so retrieval behaviour and every reported metric are unchanged. An earlier version of this note attributed the change to the engine update alone; that was published before the cause was isolated, and was wrong. UPDATE 2026-07-17 (later the same day): both serialization defects are FIXED in the engine (environment values moved to a sidecar, git-time collection scoped, plus a filesystem-mtime fallback and a wall-clock decay read found and removed during the fix), the engine's CI now locks the invariance, the adapter stages the corpus git-free so the artifact is a pure function of corpus bytes, and the new fingerprint was verified identical when recomputed from a second location (compare verdict PASS).",
+  "$reproduction": "Re-run 2026-07-17 against the 2026-07-05 baseline. bm25 and emb-minilm reproduced byte-identical artifacts 12 days on, which is what their levels are supposed to mean. spiderbrain's artifact hash did not reproduce. Isolation tests (identical corpus bytes, identical embedded clock, identical absolute path) proved three independent inputs move that artifact: the git HEAD commit time of the repository enclosing the scanned project, the absolute path of the project, and the engine version. The first two are reproducibility defects in the engine's artifact serialization, found by this re-verification and logged for a fix; the third is ordinary version change, now recorded in the fingerprint's system field. All 10 query result hashes were identical under every condition, so retrieval behaviour and every reported metric are unchanged. An earlier version of this note attributed the change to the engine update alone; that was published before the cause was isolated, and was wrong. UPDATE 2026-07-17 (later the same day): both serialization defects are FIXED in the engine (environment values moved to a sidecar, git-time collection scoped, plus a filesystem-mtime fallback and a wall-clock decay read found and removed during the fix), the engine's CI now locks the invariance, the adapter stages the corpus git-free so the artifact is a pure function of corpus bytes, and the new fingerprint was verified identical when recomputed from a second location (compare verdict PASS). FIELD NOTE 2026-07-19: the contract held under refactoring. Two days after that fix, the engine went through four production deploys in one day carrying a heavy internal refactor: three scoring code paths unified into one shared scorer, output leak guards hardened, and cloud ingest changed from shallow single-commit clones to full-history clones. Across five production parses of the same public reference repository (benjaminp/six, commit c8e3940) spanning all four deploys, the published structural fingerprint stayed identical: 9fb6e364e9c1fe49. The scored layer grew from 7 to 16 per-node fields; the fingerprinted structure never moved, which is the separation the fingerprint contract promises. The engine's internal CI now runs 45 determinism and contract gates, including artifact-invariance and a scorer-unification gate. Disclosure: operator-reported observation from our own engine's production API, not an independently reproduced benchmark run; trust levels are unchanged by it.",
   "corpus": {
     "name": "micro-app",
     "description": "Committed, deterministic 12-file TypeScript fixture (layered webshop) with 10 fixed queries.",
@@ -28,10 +28,24 @@
       "description": "Structural code-context engine (dependency graph plus frozen-clock scoring).",
       "maintainedByBenchmarkAuthor": true,
       "contextTrustLevel": 3,
-      "rebuildIdentity": { "pass": true, "distinctHashes": 1, "builds": 3 },
-      "queryStability": { "exactMatchRate": 1.0 },
-      "driftUnderNoise": { "driftScore": 0.0, "noiseInTopK": 0, "queries": 10, "verdict": "pass" },
-      "crossMachine": { "status": "not-run", "note": "Pending CI-runnable packaging. Fingerprint published for independent comparison." },
+      "rebuildIdentity": {
+        "pass": true,
+        "distinctHashes": 1,
+        "builds": 3
+      },
+      "queryStability": {
+        "exactMatchRate": 1
+      },
+      "driftUnderNoise": {
+        "driftScore": 0,
+        "noiseInTopK": 0,
+        "queries": 10,
+        "verdict": "pass"
+      },
+      "crossMachine": {
+        "status": "not-run",
+        "note": "Pending CI-runnable packaging. Fingerprint published for independent comparison."
+      },
       "artifactHash": "b24b5ee74bc4248f7046650f3ef35b2d8286e7930043922f70b9e7ac4a3b19ef",
       "engineIdentity": "sha256:ffdd6784a7c77ce7",
       "artifactHashNote": "Defect FIXED 2026-07-17, the same day it was disclosed. The engine no longer serialises environment into the artifact of record (generatedAt and the absolute project path moved to a buildinfo.json sidecar; git-time collection scoped to the scanned subtree; a filesystem-mtime fallback and a wall-clock read in incident-decay scoring, found during the fix, were also removed), and its CI now locks artifact invariance across unrelated commits, clone paths and no-git copies. The adapter additionally stages the corpus git-free before building, so the artifact is a pure function of corpus bytes: a GitHub tarball and a git clone compute the same fingerprint. Verified by recomputation from a second location: artifact hash identical, compare verdict PASS (CTL-4-eligible). The previous hash 5c49f93d... was the defective format and is superseded.",
@@ -42,10 +56,29 @@
       "description": "Dependency-free lexical index. The determinism reference baseline.",
       "maintainedByBenchmarkAuthor": true,
       "contextTrustLevel": 4,
-      "rebuildIdentity": { "pass": true, "distinctHashes": 1, "builds": 3 },
-      "queryStability": { "exactMatchRate": 1.0 },
-      "driftUnderNoise": { "driftScore": 0.04, "noiseInTopK": 2, "queries": 10, "verdict": "warn" },
-      "crossMachine": { "status": "verified", "platforms": ["ubuntu", "windows", "macos"], "note": "Verified in CI: artifact hashes identical and 10 of 10 query results identical across all three OS pairs." },
+      "rebuildIdentity": {
+        "pass": true,
+        "distinctHashes": 1,
+        "builds": 3
+      },
+      "queryStability": {
+        "exactMatchRate": 1
+      },
+      "driftUnderNoise": {
+        "driftScore": 0.04,
+        "noiseInTopK": 2,
+        "queries": 10,
+        "verdict": "warn"
+      },
+      "crossMachine": {
+        "status": "verified",
+        "platforms": [
+          "ubuntu",
+          "windows",
+          "macos"
+        ],
+        "note": "Verified in CI: artifact hashes identical and 10 of 10 query results identical across all three OS pairs."
+      },
       "artifactHash": "2a3e7c0e6c2a8e0f379858d2053d4cb7c637a3bf02a30e0c6e6a92e985dc3eb7",
       "fingerprint": "https://github.com/aabhisrv/contextbenchmark/blob/main/results/bm25.micro-app.win32-x64.fingerprint.json"
     },
@@ -54,15 +87,34 @@
       "description": "MiniLM chunk embeddings with exhaustive search. The most determinism-friendly RAG configuration possible; ANN-indexed deployments are expected to do worse.",
       "maintainedByBenchmarkAuthor": true,
       "contextTrustLevel": 3,
-      "rebuildIdentity": { "pass": true, "distinctHashes": 1, "builds": 2 },
-      "queryStability": { "exactMatchRate": 1.0 },
-      "driftUnderNoise": { "driftScore": 0.16, "noiseInTopK": 9, "queries": 10, "verdict": "warn" },
-      "crossMachine": { "status": "not-run" },
+      "rebuildIdentity": {
+        "pass": true,
+        "distinctHashes": 1,
+        "builds": 2
+      },
+      "queryStability": {
+        "exactMatchRate": 1
+      },
+      "driftUnderNoise": {
+        "driftScore": 0.16,
+        "noiseInTopK": 9,
+        "queries": 10,
+        "verdict": "warn"
+      },
+      "crossMachine": {
+        "status": "not-run"
+      },
       "artifactHash": "1aea22671b631f3fd56a7f3c615e517e7e5d03868f58300a66f8a610da09fe64",
       "fingerprint": "https://github.com/aabhisrv/contextbenchmark/blob/main/results/emb-minilm.micro-app.win32-x64.fingerprint.json"
     }
   ],
-  "awaitingAdapters": ["mem0", "zep", "supermemory", "llamaindex", "vector-stores"],
+  "awaitingAdapters": [
+    "mem0",
+    "zep",
+    "supermemory",
+    "llamaindex",
+    "vector-stores"
+  ],
   "disclosure": {
     "rule": "No Context Trust Level may be claimed without a published fingerprint that anyone can independently recompute and compare. Reports missing fingerprints should not be trusted, including ours.",
     "adapterContract": "https://github.com/aabhisrv/contextbenchmark/blob/main/adapters/ADAPTER.md"
