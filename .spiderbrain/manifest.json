@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "variant": "public",
+  "privacy": "plain-paths",
+  "engineVersion": "v5",
+  "scoredFrom": "6a37c2abded91b21b3ab9be2854be89a07dc4ca6",
+  "repo": {
+    "name": "aabhisrv/contextbenchmark",
+    "commit": "6a37c2abded91b21b3ab9be2854be89a07dc4ca6"
+  },
+  "counts": {
+    "files": 53,
+    "edges": 43,
+    "clusters": 8,
+    "masters": 8
+  },
+  "graphFingerprint": "667821695e6b8238",
+  "fileHashes": {
+    "structure.ndjson": "667821695e6b82381f676e9338d1258c324df24bac8310f0eff2cd05a4c862a7",
+    "AGENTS.block.md": "04f2eee154834bd5964e48fed8a966461a7c5332d5e5f691576f899e69f1d280"
+  },
+  "benchmark": {
+    "standard": "context-trust-level",
+    "url": "https://contextbenchmark.com",
+    "note": "CTL is measured, never hardcoded; see the published run."
+  },
+  "ownership": {
+    "owner": "repo",
+    "license": "inherits-repo",
+    "generator": "spiderbrain"
+  },
+  "attribution": null
+}
